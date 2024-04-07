@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { api } from "$/trpc/react";
+import { api } from "$/src/trpc/react";
 
 export default function Home() {
   //define constants

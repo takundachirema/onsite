@@ -1,9 +1,9 @@
-import { createTRPCRouter, publicProcedure } from "$/server/api/trpc";
+import { createTRPCRouter, publicProcedure } from "$/src/server/api/trpc";
 import {
   userSchema,
   userUpdateSchema,
   idSchema,
-} from "$/server/api/schemas/user";
+} from "$/src/server/api/schemas/user";
 
 export const userRouter = createTRPCRouter({
   //get all users
