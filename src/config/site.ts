@@ -5,24 +5,16 @@ export const siteConfig = {
   description: "Manage all your construction work remotely",
   navItems: [
     {
-      label: "Home",
-      href: "/",
+      label: "Features",
+      href: "/#features",
     },
     {
-      label: "Docs",
-      href: "/docs",
+      label: "Plans",
+      href: "/#plans",
     },
     {
       label: "Pricing",
-      href: "/pricing",
-    },
-    {
-      label: "Blog",
-      href: "/blog",
-    },
-    {
-      label: "About",
-      href: "/about",
+      href: "/#pricing",
     },
   ],
   navMenuItems: [

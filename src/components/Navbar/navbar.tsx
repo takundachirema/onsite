@@ -6,27 +6,28 @@ import {
   NavbarBrand,
   NavbarItem,
   NavbarMenuItem,
-  Button,
   Kbd,
   Link,
   Input,
   link as linkStyles,
+  Button,
 } from "@nextui-org/react";
 
+import { FaGithub, FaSearch } from "react-icons/fa";
 import {
-  FaDiscord,
-  FaGithub,
-  FaHeart,
-  FaSearch,
-  FaTwitter,
-} from "react-icons/fa";
+  OrganizationSwitcher,
+  SignInButton,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
+
 import { siteConfig } from "$/src/config/site";
 import NextLink from "next/link";
 import { clsx } from "clsx";
 
-import { ThemeSwitch } from "$/src/components/theme-switch";
+import { ThemeSwitch } from "$/src/components/Switch/theme-switch";
 
-import { Logo } from "$/src/components/icons";
+import { Logo } from "$/src/components/Icons/icons";
 
 export const Navbar = () => {
   const searchInput = (
@@ -76,35 +77,49 @@ export const Navbar = () => {
           ))}
         </ul>
       </NavbarContent>
-
       <NavbarContent
         className="hidden basis-1/5 sm:flex sm:basis-full"
         justify="end"
       >
-        <NavbarItem className="hidden gap-2 sm:flex">
-          <Link isExternal href={siteConfig.links.twitter} aria-label="Twitter">
-            <FaTwitter className="text-default-500" />
-          </Link>
-          <Link isExternal href={siteConfig.links.discord} aria-label="Discord">
-            <FaDiscord className="text-default-500" />
-          </Link>
-          <Link isExternal href={siteConfig.links.github} aria-label="Github">
-            <FaGithub className="text-default-500" />
-          </Link>
-          <ThemeSwitch />
+        <NavbarItem>
+          <SignedOut>
+            <Button size="md" color="primary">
+              <SignInButton />
+            </Button>
+          </SignedOut>
         </NavbarItem>
-        <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
         <NavbarItem className="hidden md:flex">
-          <Button
-            isExternal
-            as={Link}
-            className="bg-default-100 text-sm font-normal text-default-600"
-            href={siteConfig.links.sponsor}
-            startContent={<FaHeart className="text-danger" />}
-            variant="flat"
-          >
-            Sponsor
-          </Button>
+          <OrganizationSwitcher
+            hidePersonal
+            afterCreateOrganizationUrl="/organization/:id"
+            afterLeaveOrganizationUrl="/select-org"
+            afterSelectOrganizationUrl="/organization/:id"
+            appearance={{
+              elements: {
+                rootBox: {
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                },
+              },
+            }}
+          />
+        </NavbarItem>
+        <NavbarItem className="hidden md:flex">
+          <UserButton
+            afterSignOutUrl="/"
+            appearance={{
+              elements: {
+                avatarBox: {
+                  height: 30,
+                  width: 30,
+                },
+              },
+            }}
+          />
+        </NavbarItem>
+        <NavbarItem className="hidden gap-2 sm:flex">
+          <ThemeSwitch />
         </NavbarItem>
       </NavbarContent>
 
