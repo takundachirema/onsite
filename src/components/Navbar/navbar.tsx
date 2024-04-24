@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Navbar as NextUINavbar,
   NavbarContent,
@@ -21,6 +23,7 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 
+import { useTheme } from "next-themes";
 import { siteConfig } from "$/src/config/site";
 import NextLink from "next/link";
 import { clsx } from "clsx";
@@ -30,6 +33,8 @@ import { ThemeSwitch } from "$/src/components/Switch/theme-switch";
 import { Logo } from "$/src/components/Icons/icons";
 
 export const Navbar = () => {
+  const { theme } = useTheme();
+
   const searchInput = (
     <Input
       aria-label="Search"
@@ -56,8 +61,8 @@ export const Navbar = () => {
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="max-w-fit gap-3">
           <NextLink className="flex items-center justify-start gap-1" href="/">
-            <Logo />
-            <p className="font-bold text-inherit">ONSITE</p>
+            <Logo size={36} />
+            <p className="font-bold text-foreground">ONSITE</p>
           </NextLink>
         </NavbarBrand>
         <ul className="ml-2 hidden justify-start gap-4 lg:flex">
@@ -95,6 +100,10 @@ export const Navbar = () => {
             afterLeaveOrganizationUrl="/select-org"
             afterSelectOrganizationUrl="/organization/:id"
             appearance={{
+              variables: {
+                colorText: theme === "dark" ? "white" : "black",
+                colorBackground: theme === "dark" ? "#313639" : "#FAF9F6",
+              },
               elements: {
                 rootBox: {
                   display: "flex",

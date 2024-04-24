@@ -1,19 +1,15 @@
 import * as React from "react";
 import { type IconSvgProps } from "$/src/types";
 
-export const Logo: React.FC<IconSvgProps> = ({
-  size = 36,
-  width,
-  height,
-  ...props
-}) => (
+export const Logo: React.FC<IconSvgProps> = ({ size = 36, width, height }) => (
   <svg
     version="1.0"
     xmlns="http://www.w3.org/2000/svg"
-    width="25.000000pt"
-    height="25.000000pt"
+    width={size || width}
+    height={size || height}
     viewBox="0 0 500.000000 500.000000"
     preserveAspectRatio="xMidYMid meet"
+    // {...props}
   >
     <g
       transform="translate(0.000000,500.000000) scale(0.100000,-0.100000)"
