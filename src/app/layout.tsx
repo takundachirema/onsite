@@ -6,8 +6,8 @@ import { fontSans } from "$/src/config/fonts";
 import clsx from "clsx";
 
 import { Providers } from "./providers";
-import { Navbar } from "$/src/components/navbar";
-import { Link } from "@nextui-org/react";
+import { Navbar } from "$/src/components/Navbar/navbar";
+import { Footer } from "../components/Footer/footer";
 
 const config: SiteConfig = siteConfig;
 
@@ -45,23 +45,9 @@ export default function RootLayout({
         <Providers
           themeProps={{ children, attribute: "class", defaultTheme: "dark" }}
         >
-          <div className="relative flex h-screen flex-col">
-            <Navbar />
-            <main className="container mx-auto max-w-7xl flex-grow px-6 pt-16">
-              {children}
-            </main>
-            <footer className="flex w-full items-center justify-center py-3">
-              <Link
-                isExternal
-                className="flex items-center gap-1 text-current"
-                href="https://nextui-docs-v2.vercel.app?utm_source=next-app-template"
-                title="nextui.org homepage"
-              >
-                <span className="text-default-600">Powered by</span>
-                <p className="text-primary">NextUI</p>
-              </Link>
-            </footer>
-          </div>
+          <Navbar />
+          {children}
+          <Footer />
         </Providers>
       </body>
     </html>

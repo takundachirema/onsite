@@ -13,6 +13,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@clerk/nextjs": "^4.29.12",
     "@nextui-org/react": "^2.2.10",
     "@prisma/client": "^5.11.0",
     "@react-aria/ssr": "^3.9.2",
@@ -30,8 +31,10 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^5.0.1",
+    "react-pro-sidebar": "^1.1.0",
     "server-only": "^0.0.1",
     "superjson": "^2.2.1",
+    "tailwind-merge": "^2.2.2",
     "zod": "^3.22.4"
   },
   "devDependencies": {
