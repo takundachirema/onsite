@@ -1,6 +1,6 @@
-import { Feature } from "@/types/feature";
+import { Feature } from "$/src/utils/types";
 
-const featuresData: Feature[] = [
+const FeaturesData: Feature[] = [
   {
     id: 1,
     icon: (
@@ -17,7 +17,7 @@ const featuresData: Feature[] = [
       "Tuae nam ex similique incidunt expedita exerci tationem laudantium. Repellendus quisquam numquam perferendis earum sapiente non tempore? Fugit repellat ut maiores.",
   },
   {
-    id: 1,
+    id: 2,
     icon: (
       <svg width="40" height="40" viewBox="0 0 40 40" className="fill-current">
         <path
@@ -32,7 +32,7 @@ const featuresData: Feature[] = [
       "Tuae nam ex similique incidunt expedita exerci tationem laudantium. Repellendus quisquam numquam perferendis earum sapiente non tempore? Fugit repellat ut maiores.",
   },
   {
-    id: 1,
+    id: 3,
     icon: (
       <svg width="40" height="40" viewBox="0 0 40 40" className="fill-current">
         <path
@@ -47,7 +47,7 @@ const featuresData: Feature[] = [
       "Tuae nam ex similique incidunt expedita exerci tationem laudantium. Repellendus quisquam numquam perferendis earum sapiente non tempore? Fugit repellat ut maiores.",
   },
   {
-    id: 1,
+    id: 4,
     icon: (
       <svg width="40" height="42" viewBox="0 0 40 42" className="fill-current">
         <path
@@ -62,7 +62,7 @@ const featuresData: Feature[] = [
       "Tuae nam ex similique incidunt expedita exerci tationem laudantium. Repellendus quisquam numquam perferendis earum sapiente non tempore? Fugit repellat ut maiores.",
   },
   {
-    id: 1,
+    id: 5,
     icon: (
       <svg width="40" height="40" viewBox="0 0 40 40" className="fill-current">
         <path
@@ -77,7 +77,7 @@ const featuresData: Feature[] = [
       "Tuae nam ex similique incidunt expedita exerci tationem laudantium. Repellendus quisquam numquam perferendis earum sapiente non tempore? Fugit repellat ut maiores.",
   },
   {
-    id: 1,
+    id: 6,
     icon: (
       <svg width="40" height="45" viewBox="0 0 40 45" className="fill-current">
         <path
@@ -92,4 +92,4 @@ const featuresData: Feature[] = [
       "Tuae nam ex similique incidunt expedita exerci tationem laudantium. Repellendus quisquam numquam perferendis earum sapiente non tempore? Fugit repellat ut maiores.",
   },
 ];
-export default featuresData;
+export default FeaturesData;

@@ -1,4 +1,4 @@
-import { type Testimonial } from "$/src/types/testimonial";
+import { type Testimonial } from "$/src/utils/types";
 import { Card, CardBody } from "@nextui-org/react";
 import Image from "next/image";
 import { FaStar } from "react-icons/fa";

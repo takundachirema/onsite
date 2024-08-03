@@ -1,4 +1,4 @@
-import { type SidebarItem } from "$/src/types/sidebarItem";
+import { type SidebarItem } from "$/src/utils/types";
 import {
   Dropdown,
   DropdownItem,
@@ -8,7 +8,7 @@ import {
 import { SubMenu } from "react-pro-sidebar";
 import { IoMdMore } from "react-icons/io";
 
-export default function NavItem({
+export default function SidebarSubMenu({
   children,
   label,
   icon,

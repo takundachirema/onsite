@@ -21,22 +21,6 @@ const OrganizationLayout = ({ children }: { children: React.ReactNode }) => {
         >
           <Card shadow="sm" className="m-2 flex h-[80%] flex-col">
             <Menu>
-              <SidebarSubMenu
-                label={"Choose Project"}
-                icon={<BiSolidBuildingHouse />}
-                menuItems={[
-                  {
-                    label: "Add Project",
-                    icon: <IoMdAdd />,
-                    callback: () => {
-                      console.log("*** pressed");
-                    },
-                  },
-                ]}
-              >
-                <MenuItem> Pie charts </MenuItem>
-                <MenuItem> Line charts </MenuItem>
-              </SidebarSubMenu>
               <SidebarMenuItem
                 label={"Dashboard"}
                 icon={<MdSpaceDashboard />}
@@ -50,7 +34,20 @@ const OrganizationLayout = ({ children }: { children: React.ReactNode }) => {
                   },
                 ]}
               ></SidebarMenuItem>
-              <SidebarSubMenu
+              <SidebarMenuItem
+                label={"Projects"}
+                icon={<BiSolidBuildingHouse />}
+                menuItems={[
+                  {
+                    label: "Add Project",
+                    icon: <IoMdAdd />,
+                    callback: () => {
+                      console.log("*** pressed");
+                    },
+                  },
+                ]}
+              ></SidebarMenuItem>
+              <SidebarMenuItem
                 label={"Tasks"}
                 icon={<MdTask />}
                 menuItems={[
@@ -62,11 +59,8 @@ const OrganizationLayout = ({ children }: { children: React.ReactNode }) => {
                     },
                   },
                 ]}
-              >
-                <MenuItem> Pie charts </MenuItem>
-                <MenuItem> Line charts </MenuItem>
-              </SidebarSubMenu>
-              <SidebarSubMenu
+              ></SidebarMenuItem>
+              <SidebarMenuItem
                 label={"Rooms"}
                 icon={<MdBedroomParent />}
                 menuItems={[
@@ -78,10 +72,7 @@ const OrganizationLayout = ({ children }: { children: React.ReactNode }) => {
                     },
                   },
                 ]}
-              >
-                <MenuItem> Pie charts </MenuItem>
-                <MenuItem> Line charts </MenuItem>
-              </SidebarSubMenu>
+              ></SidebarMenuItem>
             </Menu>
           </Card>
         </Sidebar>

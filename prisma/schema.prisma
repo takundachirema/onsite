@@ -12,7 +12,80 @@ datasource db {
 
 //User with an id, name and email as strings
 model User {
-    id    String @id @default(uuid())
-    name  String
-    email String
+    id              String @id @default(uuid())
+    userId          String? @unique 
+    name            String
+    email           String? @unique
+    phoneNumber     String? @unique
+    projects        ProjectUser[]
+    tasks           Task[]
+}
+
+model Project {
+    id              String @id @default(uuid())
+    name            String
+    organizationId  String
+    users           ProjectUser[]
+    tasks           Task[]
+    rooms           Room[]
+}
+
+model ProjectUser {
+  project       Project     @relation(fields: [projectId], references: [id])
+  projectId     String
+  user          User        @relation(fields: [userId], references: [id])
+  userId        String 
+  @@id([projectId, userId])
+}
+
+model Task {
+    id              String      @id @default(uuid())
+    name            String
+    users           User[]
+    project         Project     @relation(fields: [projectId], references: [id])
+    projectId       String
+    room            Room        @relation(fields: [roomId], references: [id])
+    roomId          String
+}   
+
+model Room {
+    id              String      @id @default(uuid())
+    name            String
+    type            RoomType
+    budget          Budget?      
+    tasks           Task[]
+    project         Project     @relation(fields: [projectId], references: [id])
+    projectId       String
+}
+
+model Budget{
+    id              String      @id @default(uuid())
+    name            String
+    budgetItems     BudgetItem[]
+    room            Room        @relation(fields: [roomId], references: [id])
+    roomId          String      @unique
+}
+
+model BudgetItem {
+    id              String      @id @default(uuid())
+    name            String
+    quantity        Int
+    cost            Float
+    totalCost       Float
+    notes           String
+    budget          Budget     @relation(fields: [budgetId], references: [id])
+    budgetId        String
+}
+
+enum RoomType {
+    bedroom
+    kitchen
+    bathroom
+    study
+    pool
+    laundy
+    gym
+    garage
+    livingroom
+    foyer
 }

@@ -28,9 +28,9 @@ import { siteConfig } from "$/src/config/site";
 import NextLink from "next/link";
 import { clsx } from "clsx";
 
-import { ThemeSwitch } from "$/src/components/Switch/theme-switch";
+import { ThemeSwitch } from "$/src/components/ThemeSwitch";
 
-import { Logo } from "$/src/components/Icons/icons";
+import { Logo } from "$/src/components/Icons";
 
 export const Navbar = () => {
   const { theme } = useTheme();
@@ -88,8 +88,14 @@ export const Navbar = () => {
       >
         <NavbarItem>
           <SignedOut>
-            <Button size="md" color="primary">
-              <SignInButton />
+            <Button
+              as={Link}
+              href="/sign-in"
+              className="rounded-sm px-8 py-4 text-base font-semibold"
+              size="lg"
+              color="primary"
+            >
+              Sign In
             </Button>
           </SignedOut>
         </NavbarItem>
