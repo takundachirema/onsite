@@ -2,7 +2,7 @@
 
 import { Button, Card, Link } from "@nextui-org/react";
 import { FaDiscord, FaGithub, FaTwitter } from "react-icons/fa";
-import { siteConfig } from "../../config/site";
+import { siteConfig } from "../config/site";
 
 export const Footer = () => {
   return (

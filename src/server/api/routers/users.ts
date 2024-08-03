@@ -2,13 +2,22 @@ import { createTRPCRouter, publicProcedure } from "$/src/server/api/trpc";
 import {
   userSchema,
   userUpdateSchema,
+  userGetSchema,
   idSchema,
-} from "$/src/server/api/schemas/user";
+} from "$/src/server/api/schemas/users";
+import { type Response } from "$/src/utils/types";
 
-export const userRouter = createTRPCRouter({
+export const usersRouter = createTRPCRouter({
   //get all users
-  getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.db.user.findMany();
+  get: publicProcedure.input(userGetSchema).query(async ({ input, ctx }) => {
+    const response: Response = {
+      success: true,
+      message: "users obtained",
+      data: {},
+    };
+
+    const users = await ctx.db.user.findMany();
+    return { ...response, ...{ data: users } };
   }),
 
   //get user by id

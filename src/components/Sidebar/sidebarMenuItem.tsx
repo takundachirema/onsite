@@ -1,4 +1,4 @@
-import { type SidebarItem } from "$/src/types/sidebarItem";
+import { type SidebarItem } from "$/src/utils/types";
 import {
   Dropdown,
   DropdownItem,

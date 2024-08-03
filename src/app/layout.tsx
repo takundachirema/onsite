@@ -6,8 +6,8 @@ import { fontSans } from "$/src/config/fonts";
 import clsx from "clsx";
 
 import { Providers } from "./providers";
-import { Navbar } from "$/src/components/Navbar/navbar";
-import { Footer } from "../components/Footer/footer";
+import { Navbar } from "$/src/components/Navbar";
+import { Footer } from "../components/Footer";
 
 const config: SiteConfig = siteConfig;
 
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   ],
   icons: {
     icon: "/favicon.ico",
-    shortcut: "/favicon-16x16.png",
+    shortcut: "/favicon.ico",
     apple: "/apple-touch-icon.png",
   },
 };
