@@ -28,6 +28,8 @@ model Project {
     users           ProjectUser[]
     tasks           Task[]
     rooms           Room[]
+    status          Status @default(todo)
+    dueDate         DateTime @default(now())
 }
 
 model ProjectUser {
@@ -46,6 +48,8 @@ model Task {
     projectId       String
     room            Room        @relation(fields: [roomId], references: [id])
     roomId          String
+    status          Status @default(todo)
+    dueDate         DateTime @default(now())
 }   
 
 model Room {
@@ -56,6 +60,8 @@ model Room {
     tasks           Task[]
     project         Project     @relation(fields: [projectId], references: [id])
     projectId       String
+    status          Status @default(todo)
+    dueDate         DateTime @default(now())
 }
 
 model Budget{
@@ -88,4 +94,11 @@ enum RoomType {
     garage
     livingroom
     foyer
+}
+
+enum Status {
+    todo
+    inprogress
+    done
+    approved
 }

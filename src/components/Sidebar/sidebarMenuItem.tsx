@@ -9,7 +9,7 @@ import { MenuItem } from "react-pro-sidebar";
 import { IoMdMore } from "react-icons/io";
 import { type IconType } from "react-icons/lib";
 
-export default function NavItem({
+export default function SidebarMenuItem({
   label,
   icon,
   menuItems,
@@ -33,7 +33,7 @@ export default function NavItem({
           </DropdownTrigger>
           <DropdownMenu className="rounded-none">
             {menuItems.map((menuItem) => (
-              <DropdownItem key="new">
+              <DropdownItem key={menuItem.label}>
                 <div className="flex flex-row items-center gap-2">
                   {menuItem.icon}
                   {menuItem.label}

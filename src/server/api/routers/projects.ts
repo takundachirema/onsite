@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 import { createTRPCRouter, publicProcedure } from "$/src/server/api/trpc";
 import {
   projectSchema,
@@ -9,7 +10,7 @@ import { type Response } from "$/src/utils/types";
 
 export const projectsRouter = createTRPCRouter({
   //get all projects
-  get: publicProcedure.input(projectGetSchema).query(async ({ input, ctx }) => {
+  get: publicProcedure.input(projectGetSchema).query(async ({ ctx }) => {
     const response: Response = {
       success: true,
       message: "projects obtained",
@@ -37,8 +38,14 @@ export const projectsRouter = createTRPCRouter({
         data: {},
       };
 
+      const projectData = {
+        name: input.name,
+        organizationId: ctx.session?.organizationId!,
+        dueDate: input.dueDate,
+      };
+
       const project = ctx.db.project.create({
-        data: projectSchema.parse(input),
+        data: projectData,
       });
 
       return { ...response, ...{ data: project } };
@@ -48,18 +55,34 @@ export const projectsRouter = createTRPCRouter({
   updateProject: publicProcedure
     .input(projectUpdateSchema)
     .mutation(({ input, ctx }) => {
-      return ctx.db.project.update({
+      const response: Response = {
+        success: true,
+        message: "project updated",
+        data: {},
+      };
+
+      const project = ctx.db.project.update({
         where: {
           id: input.id.toString(),
         },
-        data: projectUpdateSchema.parse(input),
+        data: projectUpdateSchema.parse(input) as object,
       });
+
+      return { ...response, ...{ data: project } };
     }),
 
   //delete project
   deleteProject: publicProcedure.input(idSchema).mutation(({ input, ctx }) => {
-    return ctx.db.project.delete({
+    const response: Response = {
+      success: true,
+      message: "project updated",
+      data: {},
+    };
+
+    const result = ctx.db.project.delete({
       where: idSchema.parse(input),
     });
+
+    return { ...response, ...{ data: result } };
   }),
 });

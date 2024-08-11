@@ -13,3 +13,7 @@
 .ps-submenu-expand-icon {
   padding-bottom: 3%;
 }
+
+.ps-sidebar-container {
+  overflow: hidden !important;
+}

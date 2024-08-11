@@ -13,6 +13,10 @@ const config = {
   rules: {
     "@typescript-eslint/array-type": "off",
     "@typescript-eslint/consistent-type-definitions": "off",
+    "eslint-disable @typescript-eslint/no-explicit-any": "off",
+    "eslint-disable @typescript-eslint/no-unsafe-assignment": "off",
+    "eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain":
+      "off",
     "@typescript-eslint/consistent-type-imports": [
       "warn",
       {

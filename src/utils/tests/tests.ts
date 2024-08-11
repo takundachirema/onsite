@@ -20,6 +20,7 @@ export async function createTestContext(createDBUser: boolean) {
   const ctx = await createInnerTRPCContext({
     sessionId: randomInt(10000).toString(),
     userId: randomInt(10000).toString(),
+    organizationId: randomInt(10000).toString(),
   });
 
   if (createDBUser) {

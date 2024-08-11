@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { type SVGProps } from "react";
 import { type IconType } from "react-icons/lib";
 
@@ -47,4 +48,31 @@ export type Testimonial = {
   content: string;
   image: string;
   star: number;
+};
+
+export type StatusCode = "todo" | "inprogress" | "done" | "approved";
+export type Status = {
+  label: string;
+  code: StatusCode;
+  color:
+    | "default"
+    | "primary"
+    | "success"
+    | "warning"
+    | "secondary"
+    | "danger"
+    | undefined;
+};
+
+export type StatusData = {
+  [key in StatusCode]: Status;
+};
+
+export type KanbanCardData = {
+  id: string;
+  title: string;
+  status: StatusCode;
+  progress: number;
+  actions: SidebarItem[];
+  object: object;
 };
