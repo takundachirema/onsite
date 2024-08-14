@@ -31,7 +31,7 @@ export const projectsRouter = createTRPCRouter({
   //create project
   createProject: publicProcedure
     .input(projectSchema)
-    .mutation(({ input, ctx }) => {
+    .mutation(async ({ input, ctx }) => {
       const response: Response = {
         success: true,
         message: "project created",
@@ -44,7 +44,7 @@ export const projectsRouter = createTRPCRouter({
         dueDate: input.dueDate,
       };
 
-      const project = ctx.db.project.create({
+      const project = await ctx.db.project.create({
         data: projectData,
       });
 
@@ -54,14 +54,14 @@ export const projectsRouter = createTRPCRouter({
   //update project
   updateProject: publicProcedure
     .input(projectUpdateSchema)
-    .mutation(({ input, ctx }) => {
+    .mutation(async ({ input, ctx }) => {
       const response: Response = {
         success: true,
         message: "project updated",
         data: {},
       };
 
-      const project = ctx.db.project.update({
+      const project = await ctx.db.project.update({
         where: {
           id: input.id.toString(),
         },
@@ -72,17 +72,19 @@ export const projectsRouter = createTRPCRouter({
     }),
 
   //delete project
-  deleteProject: publicProcedure.input(idSchema).mutation(({ input, ctx }) => {
-    const response: Response = {
-      success: true,
-      message: "project updated",
-      data: {},
-    };
+  deleteProject: publicProcedure
+    .input(idSchema)
+    .mutation(async ({ input, ctx }) => {
+      const response: Response = {
+        success: true,
+        message: "project updated",
+        data: {},
+      };
 
-    const result = ctx.db.project.delete({
-      where: idSchema.parse(input),
-    });
+      const result = await ctx.db.project.delete({
+        where: idSchema.parse(input),
+      });
 
-    return { ...response, ...{ data: result } };
-  }),
+      return { ...response, ...{ data: result } };
+    }),
 });

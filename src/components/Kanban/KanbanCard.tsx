@@ -3,8 +3,6 @@
 import { KanbanContext } from "$/src/app/organization/context";
 import { type KanbanCardData } from "$/src/utils/types";
 import { statusData } from "$/src/utils/utils";
-import { useDraggable } from "@dnd-kit/core";
-import { CSS } from "@dnd-kit/utilities";
 import {
   Card,
   CardHeader,
@@ -28,7 +26,11 @@ const KanbanCard = ({
   index: number;
   parent: string;
 }) => {
-  const { editCard, deleteCard, moveCard } = useContext(KanbanContext)!;
+  const {
+    updateCard: editCard,
+    deleteCard,
+    moveCard,
+  } = useContext(KanbanContext)!;
 
   return (
     <Card className="max-w-[400px]">
@@ -70,13 +72,7 @@ const KanbanCard = ({
         <Progress
           size="sm"
           value={cardData.progress}
-          color={
-            cardData.progress < 50
-              ? "danger"
-              : cardData.progress === 100
-                ? "success"
-                : "secondary"
-          }
+          color="primary"
           classNames={{
             value: "text-xs",
           }}
@@ -101,6 +97,7 @@ const KanbanCard = ({
                 color={statusData.todo.color}
                 radius="full"
                 size="sm"
+                className="w-full"
                 onClick={() => moveCard(cardData, statusData.todo.code)}
               >
                 {statusData.todo.label}
@@ -111,6 +108,7 @@ const KanbanCard = ({
                 color={statusData.inprogress.color}
                 radius="full"
                 size="sm"
+                className="w-full"
                 onClick={() => moveCard(cardData, statusData.inprogress.code)}
               >
                 {statusData.inprogress.label}
@@ -121,6 +119,7 @@ const KanbanCard = ({
                 color={statusData.done.color}
                 radius="full"
                 size="sm"
+                className="w-full"
                 onClick={() => moveCard(cardData, statusData.done.code)}
               >
                 {statusData.done.label}
@@ -131,6 +130,7 @@ const KanbanCard = ({
                 color={statusData.approved.color}
                 radius="full"
                 size="sm"
+                className="w-full"
                 onClick={() => moveCard(cardData, statusData.approved.code)}
               >
                 {statusData.approved.label}

@@ -76,3 +76,5 @@ export type KanbanCardData = {
   actions: SidebarItem[];
   object: object;
 };
+
+export type KanbanCardAction = "create" | "update" | "delete";

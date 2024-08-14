@@ -15,9 +15,12 @@ export type KanbanContextData = {
   approvedItems: KanbanCardData[];
   actionBarItems: SidebarItem[];
   createCard: () => void;
-  editCard: (cardData: KanbanCardData) => void;
+  updateCard: (cardData: KanbanCardData) => void;
   deleteCard: (cardData: KanbanCardData) => void;
   moveCard: (cardData: KanbanCardData, status: StatusCode) => void;
+  onCreate: (responsePromise: any) => void;
+  onUpdate: (responsePromise: any) => void;
+  onDelete: (responsePromise: any) => void;
 };
 
 export const KanbanContext = createContext<KanbanContextData | null>(null);

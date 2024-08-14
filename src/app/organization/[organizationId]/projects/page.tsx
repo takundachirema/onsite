@@ -6,38 +6,30 @@ import { KanbanContext } from "../../context";
 import { FaPlusCircle } from "react-icons/fa";
 import { api } from "$/src/trpc/react";
 import React from "react";
-import { DatePicker } from "@nextui-org/react";
-import { parseDate } from "@internationalized/date";
 
 import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  Input,
-  Card,
-  ModalFooter,
-  Button,
-  useDisclosure,
-} from "@nextui-org/react";
-import { type StatusCode, type KanbanCardData } from "$/src/utils/types";
+  type StatusCode,
+  type KanbanCardData,
+  type KanbanCardAction,
+} from "$/src/utils/types";
 import { type Project } from "@prisma/client";
+import ProjectModal from "$/src/components/Projects/ProjectModal";
 
 const OrganizationIdPage = () => {
-  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-  const createProjectMutation = api.projects.createProject.useMutation();
   const updateProjectMutation = api.projects.updateProject.useMutation();
-  const deleteProjectMutation = api.projects.deleteProject.useMutation();
-
   const getProjectsQuery = api.projects.get.useQuery({}, { enabled: false });
 
   /** Temporary variables to hold cards shown in modal before being edited or deleted */
-  const [cardToEdit, setCardToEdit] = useState<KanbanCardData | undefined>(
-    undefined,
-  );
-  const [cardToDelete, setCardToDelete] = useState<KanbanCardData | undefined>(
-    undefined,
-  );
+  const [modalCard, setModalCard] = useState<KanbanCardData>({
+    title: "",
+    id: "",
+    object: {},
+    status: "todo",
+    progress: 0,
+    actions: [],
+  });
+  const [modalAction, setModalAction] = useState<KanbanCardAction>("create");
+  const [openModal, setOpenModal] = useState(false);
 
   /** board items */
   const [todoItems, setTodoItems] = useState<KanbanCardData[]>([]);
@@ -89,78 +81,45 @@ const OrganizationIdPage = () => {
       });
   }, []);
 
-  const createProject = async (formData: FormData) => {
-    const projectData = {
-      name: formData.get("name")?.toString() ?? "",
-      dueDate: formData.get("dueDate") as unknown as Date,
-    };
-
-    const createProjectResponse =
-      await createProjectMutation.mutateAsync(projectData);
-
-    const createdProject = await createProjectResponse.data;
-
-    if (createProjectResponse.success) {
-      addToKanbanLaneItems(createdProject);
+  const onCreate = (response: { success: boolean; data: Project }) => {
+    const project = response.data;
+    if (response.success) {
+      addToKanbanLaneItems(project);
     }
   };
 
-  const deleteProject = async () => {
-    const deleteProjectResponse = await deleteProjectMutation.mutateAsync({
-      id: cardToDelete ? cardToDelete.id : "",
-    });
-    const deletedProject = await deleteProjectResponse.data;
-
-    if (deleteProjectResponse.success) {
-      deleteFromKanbanLaneItems(deletedProject);
-    }
-  };
-
-  /**
-   * Sends the form data to the server to update the project
-   * When successful, it updates the kanban lane item card
-   * @param formData
-   */
-  const updateProject = async (formData: FormData) => {
-    const projectData = {
-      id: cardToEdit ? cardToEdit.id : "",
-      name: formData.get("name")?.toString() ?? "",
-      dueDate: formData.get("dueDate") as unknown as Date,
-    };
-
-    const updateProjectResponse =
-      await updateProjectMutation.mutateAsync(projectData);
-    const updatedProject = await updateProjectResponse.data;
-
-    if (updateProjectResponse.success) {
-      switch (updatedProject.status) {
+  const onUpdate = (response: { success: boolean; data: Project }) => {
+    const project = response.data;
+    if (response.success) {
+      switch (response.data.status) {
         case "todo": {
-          const updatedItems = updateKanbanLaneItems(updatedProject, todoItems);
+          const updatedItems = updateKanbanLaneItems(project, todoItems);
           setTodoItems(updatedItems);
           break;
         }
         case "inprogress": {
-          const updatedItems = updateKanbanLaneItems(
-            updatedProject,
-            inProgressItems,
-          );
+          const updatedItems = updateKanbanLaneItems(project, inProgressItems);
           setInProgressItems(updatedItems);
           break;
         }
         case "done": {
-          const updatedItems = updateKanbanLaneItems(updatedProject, doneItems);
+          const updatedItems = updateKanbanLaneItems(project, doneItems);
           setDoneItems(updatedItems);
           break;
         }
         case "approved": {
-          const updatedItems = updateKanbanLaneItems(
-            updatedProject,
-            approvedItems,
-          );
+          const updatedItems = updateKanbanLaneItems(project, approvedItems);
           setApprovedItems(updatedItems);
           break;
         }
       }
+    }
+  };
+
+  const onDelete = (response: { success: boolean; data: Project }) => {
+    const project = response.data;
+    if (response.success) {
+      deleteFromKanbanLaneItems(project);
     }
   };
 
@@ -175,7 +134,7 @@ const OrganizationIdPage = () => {
 
     const updateProjectResponse =
       await updateProjectMutation.mutateAsync(projectData);
-    const updatedProject = await updateProjectResponse.data;
+    const updatedProject = updateProjectResponse.data;
 
     deleteFromKanbanLaneItems(cardData.object as Project);
     addToKanbanLaneItems(updatedProject);
@@ -263,7 +222,7 @@ const OrganizationIdPage = () => {
         {
           label: "Create Project",
           icon: <FaPlusCircle />,
-          callback: onOpen,
+          callback: open,
         },
       ],
       object: project,
@@ -271,17 +230,19 @@ const OrganizationIdPage = () => {
   };
 
   const createCard = () => {
-    onOpen();
+    setOpenModal(true);
   };
 
   const editCard = (cardData: KanbanCardData) => {
-    setCardToEdit(cardData);
-    onOpen();
+    setModalCard(cardData);
+    setModalAction("update");
+    setOpenModal(true);
   };
 
   const deleteCard = (cardData: KanbanCardData) => {
-    setCardToDelete(cardData);
-    onOpen();
+    setModalCard(cardData);
+    setModalAction("delete");
+    setOpenModal(true);
   };
 
   const moveCard = (cardData: KanbanCardData, status: StatusCode) => {
@@ -294,9 +255,8 @@ const OrganizationIdPage = () => {
       });
   };
 
-  const clearModalData = () => {
-    setCardToDelete(undefined);
-    setCardToEdit(undefined);
+  const onClose = () => {
+    setOpenModal(false);
   };
 
   return (
@@ -314,84 +274,21 @@ const OrganizationIdPage = () => {
           },
         ],
         createCard: createCard,
-        editCard: editCard,
+        updateCard: editCard,
         deleteCard: deleteCard,
         moveCard: moveCard,
+        onCreate: onCreate,
+        onUpdate: onUpdate,
+        onDelete: onDelete,
       }}
     >
       <KanbanBoard />
-      <Modal
-        onClose={clearModalData}
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        placement="top-center"
-      >
-        <ModalContent>
-          <form
-            action={
-              cardToEdit
-                ? updateProject
-                : cardToDelete
-                  ? deleteProject
-                  : createProject
-            }
-          >
-            <ModalHeader className="flex flex-col gap-1">
-              {cardToEdit
-                ? "Edit Project"
-                : cardToDelete
-                  ? "Delete Project"
-                  : "New Project"}
-            </ModalHeader>
-            <ModalBody>
-              <Input
-                name="name"
-                label="name"
-                placeholder="Enter project name"
-                defaultValue={
-                  cardToEdit
-                    ? cardToEdit.title
-                    : cardToDelete
-                      ? cardToDelete.title
-                      : ""
-                }
-                disabled={cardToDelete ? true : false}
-                required
-              />
-              <DatePicker
-                defaultValue={
-                  cardToEdit
-                    ? parseDate(
-                        (cardToEdit.object as Project).dueDate
-                          .toISOString()
-                          .split("T")[0],
-                      )
-                    : cardToDelete
-                      ? parseDate(
-                          (cardToDelete.object as Project).dueDate
-                            .toISOString()
-                            .split("T")[0],
-                        )
-                      : undefined
-                }
-                name="dueDate"
-                label="Due Date"
-                isDisabled={cardToDelete ? true : false}
-                isRequired
-              />
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                onPress={onClose}
-                type="submit"
-                color={cardToDelete ? "danger" : "default"}
-              >
-                {cardToEdit ? "Edit" : cardToDelete ? "Delete" : "Create"}
-              </Button>
-            </ModalFooter>
-          </form>
-        </ModalContent>
-      </Modal>
+      <ProjectModal
+        onClose={onClose}
+        openModal={openModal}
+        action={modalAction}
+        kanbanCard={modalCard}
+      />
     </KanbanContext.Provider>
   );
 };
