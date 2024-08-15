@@ -41,9 +41,8 @@ const OrganizationIdPage = () => {
   useEffect(() => {
     getProjectsQuery
       .refetch()
-      .then((response: unknown) => {
-        const typedResponse = response as { data: { data: Project[] } };
-        const projects = typedResponse.data.data;
+      .then((response) => {
+        const projects = response.data ? response.data.data : [];
 
         const todoCards: KanbanCardData[] = [];
         const inProgressCards: KanbanCardData[] = [];

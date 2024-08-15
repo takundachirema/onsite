@@ -2,7 +2,7 @@
 
 import { Card } from "@nextui-org/react";
 import { Sidebar, Menu } from "react-pro-sidebar";
-import SidebarMenuItem from "$/src/components/Sidebar/SidebarMenuItem";
+import SidebarMenuItem from "$/src/components/Sidebar/sidebarMenuItem";
 import { IoMdAdd } from "react-icons/io";
 import { BiSolidBuildingHouse } from "react-icons/bi";
 import { MdBedroomParent, MdSpaceDashboard, MdTask } from "react-icons/md";
