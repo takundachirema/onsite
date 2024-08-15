@@ -17,7 +17,9 @@ import { type PrismaClient } from "@prisma/client";
 import { type NextRequest } from "next/server";
 
 export type Context = {
-  session: { sessionId: string; userId: string } | undefined;
+  session:
+    | { sessionId: string; userId: string; organizationId: string }
+    | undefined;
   db: PrismaClient;
 };
 
@@ -40,7 +42,9 @@ export type Context = {
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
 export const createInnerTRPCContext = async (
-  session: { sessionId: string; userId: string } | undefined,
+  session:
+    | { sessionId: string; userId: string; organizationId: string }
+    | undefined,
 ): Promise<Context> => {
   return {
     session: session,
@@ -59,6 +63,7 @@ export const createTRPCContext = (opts: { req: NextRequest }) => {
   return createInnerTRPCContext({
     sessionId: auth.sessionId,
     userId: auth.userId,
+    organizationId: auth.orgId!,
   });
 };
 

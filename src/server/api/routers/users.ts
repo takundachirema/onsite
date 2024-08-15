@@ -16,40 +16,77 @@ export const usersRouter = createTRPCRouter({
       data: {},
     };
 
-    const users = await ctx.db.user.findMany();
+    const users = await ctx.db.user.findMany({
+      where: userGetSchema.parse(input),
+    });
+
     return { ...response, ...{ data: users } };
   }),
 
   //get user by id
-  getOne: publicProcedure.input(idSchema).query(({ input, ctx }) => {
-    return ctx.db.user.findUnique({
+  getOne: publicProcedure.input(idSchema).query(async ({ input, ctx }) => {
+    const response: Response = {
+      success: true,
+      message: "user obtained",
+      data: {},
+    };
+
+    const user = await ctx.db.user.findUnique({
       where: idSchema.parse(input),
     });
+
+    return { ...response, ...{ data: user } };
   }),
 
   //create user
-  createUser: publicProcedure.input(userSchema).mutation(({ input, ctx }) => {
-    return ctx.db.user.create({
-      data: userSchema.parse(input),
-    });
-  }),
+  createUser: publicProcedure
+    .input(userSchema)
+    .mutation(async ({ input, ctx }) => {
+      const response: Response = {
+        success: true,
+        message: "user created",
+        data: {},
+      };
+
+      const user = await ctx.db.user.create({
+        data: userSchema.parse(input),
+      });
+
+      return { ...response, ...{ data: user } };
+    }),
 
   //update user
   updateUser: publicProcedure
     .input(userUpdateSchema)
     .mutation(({ input, ctx }) => {
-      return ctx.db.user.update({
+      const response: Response = {
+        success: true,
+        message: "user updated",
+        data: {},
+      };
+
+      const user = ctx.db.user.update({
         where: {
           id: input.id.toString(),
         },
         data: userUpdateSchema.parse(input),
       });
+
+      return { ...response, ...{ data: user } };
     }),
 
   //delete user
   deleteUser: publicProcedure.input(idSchema).mutation(({ input, ctx }) => {
-    return ctx.db.user.delete({
+    const response: Response = {
+      success: true,
+      message: "user deleted",
+      data: {},
+    };
+
+    const user = ctx.db.user.delete({
       where: idSchema.parse(input),
     });
+
+    return { ...response, ...{ data: user } };
   }),
 });

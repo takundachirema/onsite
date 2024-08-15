@@ -15,7 +15,10 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^4.29.12",
-    "@nextui-org/react": "^2.2.10",
+    "@dnd-kit/core": "^6.1.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@internationalized/date": "^3.5.5",
+    "@nextui-org/react": "^2.4.6",
     "@prisma/client": "^5.11.0",
     "@react-aria/ssr": "^3.9.2",
     "@react-aria/visually-hidden": "^3.8.10",

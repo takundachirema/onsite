@@ -12,6 +12,7 @@ export const userGetSchema = z.object({
   id: z.string().optional(),
   name: z.string().optional(),
   email: z.string().optional(),
+  organizationId: z.string().optional(),
 });
 
 export const userUpdateSchema = z.object({

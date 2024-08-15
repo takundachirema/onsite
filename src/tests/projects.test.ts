@@ -19,7 +19,7 @@ describe("projects", () => {
     const caller = createCaller(ctx);
     const createProjectResponse = await caller.projects.createProject({
       name: "Project 1",
-      organizationId: "1",
+      dueDate: new Date(),
     });
     const projectData = createProjectResponse.data;
 
