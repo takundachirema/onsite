@@ -17,7 +17,7 @@ export const usersRouter = createTRPCRouter({
     };
 
     const users = await ctx.db.user.findMany({
-      where: idSchema.parse(input),
+      where: userGetSchema.parse(input),
     });
 
     return { ...response, ...{ data: users } };
