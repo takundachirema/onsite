@@ -64,8 +64,18 @@ export type Status = {
     | undefined;
 };
 
-export type StatusData = {
+export type StatusDataMap = {
   [key in StatusCode]: Status;
+};
+
+export type RoleCode = "owner" | "admin" | "guest" | "employee";
+export type Role = {
+  label: string;
+  code: RoleCode;
+  color: "default" | "primary" | "success" | "secondary" | undefined;
+};
+export type RoleDataMap = {
+  [key in RoleCode]: Role;
 };
 
 export type KanbanCardData = {

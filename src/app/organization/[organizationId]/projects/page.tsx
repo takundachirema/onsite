@@ -2,7 +2,6 @@
 
 import KanbanBoard from "$/src/components/Kanban/KanbanBoard";
 import { useEffect, useState } from "react";
-import { KanbanContext } from "../../context";
 import { FaPlusCircle } from "react-icons/fa";
 import { api } from "$/src/trpc/react";
 import React from "react";
@@ -14,6 +13,7 @@ import {
 } from "$/src/utils/types";
 import { type Project } from "@prisma/client";
 import ProjectModal from "$/src/components/Projects/ProjectModal";
+import { KanbanContext } from "$/src/context/KanbanContext";
 
 const OrganizationIdPage = () => {
   const updateProjectMutation = api.projects.updateProject.useMutation();

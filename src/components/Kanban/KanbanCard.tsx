@@ -1,8 +1,8 @@
 "use client";
 
-import { KanbanContext } from "$/src/app/organization/context";
+import { KanbanContext } from "$/src/context/KanbanContext";
 import { type KanbanCardData } from "$/src/utils/types";
-import { statusData } from "$/src/utils/utils";
+import { statusDataMap } from "$/src/utils/utils";
 import {
   Card,
   CardHeader,
@@ -84,7 +84,7 @@ const KanbanCard = ({
         <Dropdown>
           <DropdownTrigger>
             <Button
-              color={statusData[cardData.status].color}
+              color={statusDataMap[cardData.status].color}
               radius="full"
               size="sm"
             >
@@ -94,46 +94,48 @@ const KanbanCard = ({
           <DropdownMenu aria-label="Static Actions">
             <DropdownItem key="todo">
               <Button
-                color={statusData.todo.color}
+                color={statusDataMap.todo.color}
                 radius="full"
                 size="sm"
                 className="w-full"
-                onClick={() => moveCard(cardData, statusData.todo.code)}
+                onClick={() => moveCard(cardData, statusDataMap.todo.code)}
               >
-                {statusData.todo.label}
+                {statusDataMap.todo.label}
               </Button>
             </DropdownItem>
             <DropdownItem key="inprogress">
               <Button
-                color={statusData.inprogress.color}
+                color={statusDataMap.inprogress.color}
                 radius="full"
                 size="sm"
                 className="w-full"
-                onClick={() => moveCard(cardData, statusData.inprogress.code)}
+                onClick={() =>
+                  moveCard(cardData, statusDataMap.inprogress.code)
+                }
               >
-                {statusData.inprogress.label}
+                {statusDataMap.inprogress.label}
               </Button>
             </DropdownItem>
             <DropdownItem key="done">
               <Button
-                color={statusData.done.color}
+                color={statusDataMap.done.color}
                 radius="full"
                 size="sm"
                 className="w-full"
-                onClick={() => moveCard(cardData, statusData.done.code)}
+                onClick={() => moveCard(cardData, statusDataMap.done.code)}
               >
-                {statusData.done.label}
+                {statusDataMap.done.label}
               </Button>
             </DropdownItem>
             <DropdownItem key="approve">
               <Button
-                color={statusData.approved.color}
+                color={statusDataMap.approved.color}
                 radius="full"
                 size="sm"
                 className="w-full"
-                onClick={() => moveCard(cardData, statusData.approved.code)}
+                onClick={() => moveCard(cardData, statusDataMap.approved.code)}
               >
-                {statusData.approved.label}
+                {statusDataMap.approved.label}
               </Button>
             </DropdownItem>
           </DropdownMenu>

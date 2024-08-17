@@ -11,7 +11,6 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-  Avatar,
   Select,
   SelectItem,
   Chip,
@@ -19,9 +18,9 @@ import {
 import { type User, type Project } from "@prisma/client";
 import { api } from "$/src/trpc/react";
 import { useContext, useEffect, useState } from "react";
-import { KanbanContext } from "$/src/app/organization/context";
 import { FaUserCircle } from "react-icons/fa";
-import { useOrganization, useUser } from "@clerk/nextjs";
+import { useOrganization } from "@clerk/nextjs";
+import { KanbanContext } from "$/src/context/KanbanContext";
 
 interface Props {
   openModal: boolean;
@@ -36,13 +35,15 @@ const ProjectModal = ({
   action,
   kanbanCard,
 }: Props) => {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  /** react hooks */
   const { onCreate, onUpdate, onDelete } = useContext(KanbanContext)!;
   const [users, setUsers] = useState<User[]>([]);
-  const { user: clerkUser } = useUser();
+
+  /** lib hooks */
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { organization } = useOrganization();
 
-  /** Hooks to update the project */
+  /** api hooks */
   const createProjectMutation = api.projects.createProject.useMutation();
   const updateProjectMutation = api.projects.updateProject.useMutation();
   const deleteProjectMutation = api.projects.deleteProject.useMutation();
@@ -50,8 +51,8 @@ const ProjectModal = ({
     { organizationId: organization?.id },
     { enabled: false },
   );
-  /** */
 
+  /** useeffect hooks */
   useEffect(() => {
     if (openModal) onOpen();
   }, [openModal]);
@@ -66,6 +67,7 @@ const ProjectModal = ({
         console.log(error);
       });
   }, []);
+
   /**
    * Sends the form data to the server to create the project
    * It calls the callback function with the results
@@ -138,31 +140,19 @@ const ProjectModal = ({
               name="name"
               label="name"
               placeholder="Enter project name"
-              defaultValue={
-                action === "update"
-                  ? kanbanCard.title
-                  : action === "delete"
-                    ? kanbanCard.title
-                    : ""
-              }
+              defaultValue={kanbanCard ? kanbanCard.title : ""}
               disabled={action === "delete" ? true : false}
               required
             />
             <DatePicker
               defaultValue={
-                action === "update"
+                (kanbanCard.object as Project).dueDate
                   ? parseDate(
                       (kanbanCard.object as Project).dueDate
                         .toISOString()
                         .split("T")[0]!,
                     )
-                  : action === "delete"
-                    ? parseDate(
-                        (kanbanCard.object as Project).dueDate
-                          .toISOString()
-                          .split("T")[0]!,
-                      )
-                    : undefined
+                  : undefined
               }
               name="dueDate"
               label="Due Date"
@@ -171,13 +161,14 @@ const ProjectModal = ({
             />
             <Select
               items={users}
+              labelPlacement="outside"
               label="Assigned to"
-              variant="bordered"
+              variant="flat"
               isMultiline={false}
               selectionMode="multiple"
               placeholder="Select Users"
               classNames={{
-                base: "max-w-xs",
+                base: "w-full",
                 trigger: "min-h-12 py-2",
               }}
               renderValue={(items) => {

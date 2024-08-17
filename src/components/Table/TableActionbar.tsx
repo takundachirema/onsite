@@ -1,10 +1,11 @@
+import { type SidebarItem } from "$/src/utils/types";
 import { Button, Card } from "@nextui-org/react";
-import { useContext } from "react";
-import { KanbanContext } from "$/src/context/KanbanContext";
 
-export default function KanbanActionbar() {
-  const { createCard, actionBarItems } = useContext(KanbanContext)!;
-
+export default function TableActionbar({
+  actionBarItems,
+}: {
+  actionBarItems: SidebarItem[];
+}) {
   return (
     <Card className="w-full p-4">
       <div className="flex w-full flex-row justify-start">
@@ -12,7 +13,9 @@ export default function KanbanActionbar() {
           <Button
             key={actionBarItem.label}
             className="flex flex-row items-center gap-2"
-            onClick={() => createCard()}
+            onClick={() => {
+              actionBarItem.callback(actionBarItem);
+            }}
           >
             {actionBarItem.icon}
             {actionBarItem.label}

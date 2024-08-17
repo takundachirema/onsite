@@ -7,19 +7,22 @@ import {
 } from "@nextui-org/react";
 import { MenuItem } from "react-pro-sidebar";
 import { IoMdMore } from "react-icons/io";
-import { type IconType } from "react-icons/lib";
+
+interface Props {
+  label: string;
+  icon: React.ReactNode;
+  menuItems: SidebarItem[];
+  active?: boolean;
+}
 
 export default function SidebarMenuItem({
   label,
   icon,
   menuItems,
-}: {
-  label: string;
-  icon: React.ReactNode;
-  menuItems: SidebarItem[];
-}) {
+  active = false,
+}: Props) {
   return (
-    <MenuItem className="group">
+    <MenuItem active={active} className="group">
       <div className="flex w-full flex-row items-center justify-between">
         <div className="flex flex-row items-center gap-4">
           {icon}

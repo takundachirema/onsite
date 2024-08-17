@@ -9,7 +9,7 @@ import { MdBedroomParent, MdSpaceDashboard, MdTask } from "react-icons/md";
 
 const OrganizationLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <main className="flex flex-row justify-between">
+    <main className="flex !h-[100%] flex-row justify-between">
       <div className="m-4 overflow-clip">
         <Sidebar
           className="!h-[100%] !border-transparent"
@@ -18,6 +18,7 @@ const OrganizationLayout = ({ children }: { children: React.ReactNode }) => {
           <Card shadow="sm" className="flex h-[100%] flex-col">
             <Menu>
               <SidebarMenuItem
+                active={false}
                 label={"Dashboard"}
                 icon={<MdSpaceDashboard />}
                 menuItems={[

@@ -19,6 +19,7 @@ model User {
     phoneNumber     String? @unique
     projects        ProjectUser[]
     tasks           Task[]
+    role            Role @default(employee)
 }
 
 model Project {
@@ -101,4 +102,11 @@ enum Status {
     inprogress
     done
     approved
+}
+
+enum Role {
+    owner
+    admin
+    guest
+    employee
 }
