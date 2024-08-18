@@ -12,7 +12,7 @@ import { ZodError } from "zod";
 
 import { db } from "$/src/server/db";
 
-import { getAuth, type SignedInAuthObject } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { type PrismaClient } from "@prisma/client";
 import { type NextRequest } from "next/server";
 
@@ -59,11 +59,12 @@ export const createInnerTRPCContext = async (
  * @see https://trpc.io/docs/context
  */
 export const createTRPCContext = (opts: { req: NextRequest }) => {
-  const auth = getAuth(opts.req) as SignedInAuthObject;
+  const { userId, sessionId, orgId } = auth();
+
   return createInnerTRPCContext({
-    sessionId: auth.sessionId,
-    userId: auth.userId,
-    organizationId: auth.orgId!,
+    sessionId: sessionId!,
+    userId: userId!,
+    organizationId: orgId!,
   });
 };
 

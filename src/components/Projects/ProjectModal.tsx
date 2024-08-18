@@ -162,11 +162,11 @@ const ProjectModal = ({
             <Select
               items={users}
               labelPlacement="outside"
-              label="Assigned to"
+              label="Project Team"
               variant="flat"
               isMultiline={false}
               selectionMode="multiple"
-              placeholder="Select Users"
+              placeholder="Select Team"
               classNames={{
                 base: "w-full",
                 trigger: "min-h-12 py-2",

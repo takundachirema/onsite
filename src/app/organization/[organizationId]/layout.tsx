@@ -1,11 +1,12 @@
 "use client";
 
-import { Card } from "@nextui-org/react";
+import { Card, Divider } from "@nextui-org/react";
 import { Sidebar, Menu } from "react-pro-sidebar";
 import SidebarMenuItem from "$/src/components/Sidebar/sidebarMenuItem";
 import { IoMdAdd } from "react-icons/io";
 import { BiSolidBuildingHouse } from "react-icons/bi";
 import { MdBedroomParent, MdSpaceDashboard, MdTask } from "react-icons/md";
+import { FaUser } from "react-icons/fa";
 
 const OrganizationLayout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -16,8 +17,9 @@ const OrganizationLayout = ({ children }: { children: React.ReactNode }) => {
           backgroundColor="transparent"
         >
           <Card shadow="sm" className="flex h-[100%] flex-col">
-            <Menu>
+            <Menu className="items-center gap-2">
               <SidebarMenuItem
+                link="./dashboard"
                 active={false}
                 label={"Dashboard"}
                 icon={<MdSpaceDashboard />}
@@ -32,6 +34,7 @@ const OrganizationLayout = ({ children }: { children: React.ReactNode }) => {
                 ]}
               ></SidebarMenuItem>
               <SidebarMenuItem
+                link="./projects"
                 label={"Projects"}
                 icon={<BiSolidBuildingHouse />}
                 menuItems={[
@@ -45,6 +48,7 @@ const OrganizationLayout = ({ children }: { children: React.ReactNode }) => {
                 ]}
               ></SidebarMenuItem>
               <SidebarMenuItem
+                link="./tasks"
                 label={"Tasks"}
                 icon={<MdTask />}
                 menuItems={[
@@ -58,11 +62,27 @@ const OrganizationLayout = ({ children }: { children: React.ReactNode }) => {
                 ]}
               ></SidebarMenuItem>
               <SidebarMenuItem
+                link="./rooms"
                 label={"Rooms"}
                 icon={<MdBedroomParent />}
                 menuItems={[
                   {
                     label: "Add Room",
+                    icon: <IoMdAdd />,
+                    callback: () => {
+                      console.log("*** pressed");
+                    },
+                  },
+                ]}
+              ></SidebarMenuItem>
+              <Divider />
+              <SidebarMenuItem
+                link="./users"
+                label={"Users"}
+                icon={<FaUser />}
+                menuItems={[
+                  {
+                    label: "Add User",
                     icon: <IoMdAdd />,
                     callback: () => {
                       console.log("*** pressed");

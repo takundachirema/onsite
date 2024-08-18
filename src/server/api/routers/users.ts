@@ -49,7 +49,10 @@ export const usersRouter = createTRPCRouter({
       };
 
       const user = await ctx.db.user.create({
-        data: userSchema.parse(input),
+        data: {
+          ...userSchema.parse(input),
+          ...{ organizationId: ctx.session?.organizationId },
+        },
       });
 
       return { ...response, ...{ data: user } };
