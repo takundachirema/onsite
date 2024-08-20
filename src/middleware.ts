@@ -1,38 +1,26 @@
-import { authMiddleware, redirectToSignIn } from "@clerk/nextjs";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
+const postSignIn = createRouteMatcher(["/post-sign-in"]);
+const isPublicRoute = createRouteMatcher([
+  "/",
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+  "/(api|trpc)(.*)",
+]);
 import { NextResponse } from "next/server";
 
-export default authMiddleware({
-  publicRoutes: ["/"],
-  afterAuth(auth, req) {
-    // If we are login and in the landing page
-    // we need to redirect
-    if (auth.userId && auth.isPublicRoute) {
-      let path = "/select-org";
+export default clerkMiddleware(async (auth, request) => {
+  if (!isPublicRoute(request)) {
+    auth().protect();
 
-      if (auth.orgId) {
-        path = `organization/${auth.orgId}/projects`;
-      }
-
-      const orgSelection = new URL(path, req.url);
-
-      return NextResponse.redirect(orgSelection);
+    if (!auth().userId) {
+      return NextResponse.redirect(new URL("/sign-in", request.url));
     }
 
-    // If we are not authenticated and we are not in landing page
-    if (!auth.userId && !auth.isPublicRoute) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return redirectToSignIn({ returnBackUrl: req.url });
+    if (!auth().orgId) {
+      return NextResponse.redirect(new URL("/select-org", request.url));
     }
-
-    // If we hace the use ir and we do not have an Id organization,
-    // we never select any organization, and if we are not in /select-org
-    // We force to create an organization or select
-    if (auth.userId && !auth.orgId && req.nextUrl.pathname !== "/select-org") {
-      const orgSelection = new URL("/select-org", req.url);
-      return NextResponse.redirect(orgSelection);
-    }
-  },
+  }
 });
 
 export const config = {

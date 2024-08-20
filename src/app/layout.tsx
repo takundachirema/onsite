@@ -1,5 +1,4 @@
 import "$/src/styles/globals.css";
-
 import { type Metadata } from "next";
 import { siteConfig, type SiteConfig } from "$/src/config/site";
 import { fontSans } from "$/src/config/fonts";

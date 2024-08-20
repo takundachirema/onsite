@@ -11,7 +11,6 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-  Avatar,
   Select,
   SelectItem,
   Chip,
@@ -19,9 +18,9 @@ import {
 import { type User, type Project } from "@prisma/client";
 import { api } from "$/src/trpc/react";
 import { useContext, useEffect, useState } from "react";
-import { KanbanContext } from "$/src/app/organization/context";
 import { FaUserCircle } from "react-icons/fa";
-import { useOrganization, useUser } from "@clerk/nextjs";
+import { useOrganization } from "@clerk/nextjs";
+import { KanbanContext } from "$/src/context/KanbanContext";
 
 interface Props {
   openModal: boolean;
@@ -36,13 +35,16 @@ const ProjectModal = ({
   action,
   kanbanCard,
 }: Props) => {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  /** react hooks */
   const { onCreate, onUpdate, onDelete } = useContext(KanbanContext)!;
   const [users, setUsers] = useState<User[]>([]);
-  const { user: clerkUser } = useUser();
+  const [projectTeam, setProjectTeam] = useState<string[]>([]);
+
+  /** lib hooks */
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { organization } = useOrganization();
 
-  /** Hooks to update the project */
+  /** api hooks */
   const createProjectMutation = api.projects.createProject.useMutation();
   const updateProjectMutation = api.projects.updateProject.useMutation();
   const deleteProjectMutation = api.projects.deleteProject.useMutation();
@@ -50,13 +52,21 @@ const ProjectModal = ({
     { organizationId: organization?.id },
     { enabled: false },
   );
-  /** */
 
+  /** useeffect hooks */
   useEffect(() => {
-    if (openModal) onOpen();
+    if (openModal) {
+      onOpen();
+      initProjectTeam();
+      if (!getUsersQuery.isFetched) {
+        fetchUsers();
+      } else {
+        setUsers(getUsersQuery.data?.data ?? []);
+      }
+    }
   }, [openModal]);
 
-  useEffect(() => {
+  const fetchUsers = () => {
     getUsersQuery
       .refetch()
       .then((response) => {
@@ -65,7 +75,23 @@ const ProjectModal = ({
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  };
+
+  /** sets the project team ids from the project users */
+  const initProjectTeam = () => {
+    if (!kanbanCard) return;
+
+    const projectUsers = (kanbanCard.object as { users: { id: string }[] })
+      .users;
+
+    if (!projectUsers) return;
+
+    const userIds = projectUsers.map((projectUser) => {
+      return projectUser.id;
+    });
+
+    setProjectTeam(userIds);
+  };
   /**
    * Sends the form data to the server to create the project
    * It calls the callback function with the results
@@ -75,6 +101,7 @@ const ProjectModal = ({
     const projectData = {
       name: formData.get("name")?.toString() ?? "",
       dueDate: formData.get("dueDate") as unknown as Date,
+      userIds: formData.getAll("project-team") as string[],
     };
 
     const createProjectResponse =
@@ -93,6 +120,7 @@ const ProjectModal = ({
       id: kanbanCard ? kanbanCard.id : "",
       name: formData.get("name")?.toString() ?? "",
       dueDate: formData.get("dueDate") as unknown as Date,
+      userIds: formData.getAll("project-team") as string[],
     };
 
     const updateProjectResponse =
@@ -138,31 +166,19 @@ const ProjectModal = ({
               name="name"
               label="name"
               placeholder="Enter project name"
-              defaultValue={
-                action === "update"
-                  ? kanbanCard.title
-                  : action === "delete"
-                    ? kanbanCard.title
-                    : ""
-              }
+              defaultValue={kanbanCard ? kanbanCard.title : ""}
               disabled={action === "delete" ? true : false}
               required
             />
             <DatePicker
               defaultValue={
-                action === "update"
+                (kanbanCard.object as Project).dueDate
                   ? parseDate(
                       (kanbanCard.object as Project).dueDate
                         .toISOString()
                         .split("T")[0]!,
                     )
-                  : action === "delete"
-                    ? parseDate(
-                        (kanbanCard.object as Project).dueDate
-                          .toISOString()
-                          .split("T")[0]!,
-                      )
-                    : undefined
+                  : undefined
               }
               name="dueDate"
               label="Due Date"
@@ -170,14 +186,17 @@ const ProjectModal = ({
               isRequired
             />
             <Select
+              name="project-team"
               items={users}
-              label="Assigned to"
-              variant="bordered"
+              labelPlacement="outside"
+              label="Project Team"
+              variant="flat"
               isMultiline={false}
               selectionMode="multiple"
-              placeholder="Select Users"
+              placeholder="Select Team"
+              defaultSelectedKeys={projectTeam}
               classNames={{
-                base: "max-w-xs",
+                base: "w-full",
                 trigger: "min-h-12 py-2",
               }}
               renderValue={(items) => {

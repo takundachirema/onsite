@@ -1,4 +1,5 @@
 "use client";
+
 import Container from "../components/Common/Container";
 import ScrollUp from "../components/Common/ScrollUp";
 import Features from "../components/Features/Features";

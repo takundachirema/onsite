@@ -2,7 +2,6 @@
 
 import KanbanBoard from "$/src/components/Kanban/KanbanBoard";
 import { useEffect, useState } from "react";
-import { KanbanContext } from "../../context";
 import { FaPlusCircle } from "react-icons/fa";
 import { api } from "$/src/trpc/react";
 import React from "react";
@@ -14,6 +13,7 @@ import {
 } from "$/src/utils/types";
 import { type Project } from "@prisma/client";
 import ProjectModal from "$/src/components/Projects/ProjectModal";
+import { KanbanContext } from "$/src/context/KanbanContext";
 
 const OrganizationIdPage = () => {
   const updateProjectMutation = api.projects.updateProject.useMutation();
@@ -211,12 +211,13 @@ const OrganizationIdPage = () => {
     return updatedItems;
   };
 
-  const kanbanCard = (project: Project) => {
+  const kanbanCard = (project: Project & { users?: { id: string }[] }) => {
     return {
       id: project.id,
       title: project.name,
       status: project.status,
       progress: 90,
+      users: project.users ? project.users.length : 0,
       actions: [
         {
           label: "Create Project",

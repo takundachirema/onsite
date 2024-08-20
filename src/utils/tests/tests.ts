@@ -31,6 +31,7 @@ export async function createTestContext(createDBUser: boolean) {
         name: faker.person.firstName(),
         email: `${firstName}.${lastName}@test.com`,
         userId: ctx.session!.userId,
+        role: "employee",
       },
     });
   }

@@ -49,7 +49,10 @@ export const usersRouter = createTRPCRouter({
       };
 
       const user = await ctx.db.user.create({
-        data: userSchema.parse(input),
+        data: {
+          ...userSchema.parse(input),
+          ...{ organizationId: ctx.session?.organizationId },
+        },
       });
 
       return { ...response, ...{ data: user } };
@@ -58,35 +61,37 @@ export const usersRouter = createTRPCRouter({
   //update user
   updateUser: publicProcedure
     .input(userUpdateSchema)
-    .mutation(({ input, ctx }) => {
+    .mutation(async ({ input, ctx }) => {
       const response: Response = {
         success: true,
         message: "user updated",
         data: {},
       };
 
-      const user = ctx.db.user.update({
+      const user = await ctx.db.user.update({
         where: {
           id: input.id.toString(),
         },
-        data: userUpdateSchema.parse(input),
+        data: userUpdateSchema.parse(input) as object,
       });
 
       return { ...response, ...{ data: user } };
     }),
 
   //delete user
-  deleteUser: publicProcedure.input(idSchema).mutation(({ input, ctx }) => {
-    const response: Response = {
-      success: true,
-      message: "user deleted",
-      data: {},
-    };
+  deleteUser: publicProcedure
+    .input(idSchema)
+    .mutation(async ({ input, ctx }) => {
+      const response: Response = {
+        success: true,
+        message: "user deleted",
+        data: {},
+      };
 
-    const user = ctx.db.user.delete({
-      where: idSchema.parse(input),
-    });
+      const user = await ctx.db.user.delete({
+        where: idSchema.parse(input),
+      });
 
-    return { ...response, ...{ data: user } };
-  }),
+      return { ...response, ...{ data: user } };
+    }),
 });
