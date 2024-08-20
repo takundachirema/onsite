@@ -18,7 +18,7 @@ model User {
     name            String
     email           String? @unique
     phoneNumber     String? @unique
-    projects        ProjectUser[]
+    projects        Project[]
     tasks           Task[]
     role            Role @default(employee)
 }
@@ -27,19 +27,11 @@ model Project {
     id              String @id @default(uuid())
     name            String
     organizationId  String
-    users           ProjectUser[]
+    users           User[]
     tasks           Task[]
     rooms           Room[]
     status          Status @default(todo)
     dueDate         DateTime @default(now())
-}
-
-model ProjectUser {
-  project       Project     @relation(fields: [projectId], references: [id])
-  projectId     String
-  user          User        @relation(fields: [userId], references: [id])
-  userId        String 
-  @@id([projectId, userId])
 }
 
 model Task {

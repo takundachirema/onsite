@@ -140,12 +140,14 @@ const KanbanCard = ({
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>
-        <Chip>
-          <div className="flex flex-row items-center gap-4 rounded-full">
-            <FaUsers />
-            <p>{7}</p>
-          </div>
-        </Chip>
+        {cardData.users !== undefined && (
+          <Chip>
+            <div className="flex flex-row items-center gap-4 rounded-full">
+              <FaUsers />
+              <p>{cardData.users}</p>
+            </div>
+          </Chip>
+        )}
       </CardFooter>
     </Card>
   );

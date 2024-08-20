@@ -211,12 +211,13 @@ const OrganizationIdPage = () => {
     return updatedItems;
   };
 
-  const kanbanCard = (project: Project) => {
+  const kanbanCard = (project: Project & { users?: { id: string }[] }) => {
     return {
       id: project.id,
       title: project.name,
       status: project.status,
       progress: 90,
+      users: project.users ? project.users.length : 0,
       actions: [
         {
           label: "Create Project",

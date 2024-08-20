@@ -17,7 +17,15 @@ export const projectsRouter = createTRPCRouter({
       data: {},
     };
 
-    const projects = await ctx.db.project.findMany();
+    const projects = await ctx.db.project.findMany({
+      include: {
+        users: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
     return { ...response, ...{ data: projects } };
   }),
 
@@ -38,14 +46,24 @@ export const projectsRouter = createTRPCRouter({
         data: {},
       };
 
+      const userIds = input.userIds ?? [];
+
       const projectData = {
         name: input.name,
         organizationId: ctx.session?.organizationId!,
         dueDate: input.dueDate,
+        users: { connect: userIds.map((userId) => ({ id: userId })) },
       };
 
       const project = await ctx.db.project.create({
         data: projectData,
+        include: {
+          users: {
+            select: {
+              id: true,
+            },
+          },
+        },
       });
 
       return { ...response, ...{ data: project } };
@@ -61,11 +79,26 @@ export const projectsRouter = createTRPCRouter({
         data: {},
       };
 
+      const userIds = input.userIds
+        ? { users: { set: input.userIds.map((userId) => ({ id: userId })) } }
+        : {};
+
+      delete input.userIds;
       const project = await ctx.db.project.update({
         where: {
           id: input.id.toString(),
         },
-        data: projectUpdateSchema.parse(input) as object,
+        data: {
+          ...(projectUpdateSchema.parse(input) as object),
+          ...userIds,
+        },
+        include: {
+          users: {
+            select: {
+              id: true,
+            },
+          },
+        },
       });
 
       return { ...response, ...{ data: project } };

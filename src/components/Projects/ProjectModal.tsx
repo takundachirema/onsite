@@ -38,6 +38,7 @@ const ProjectModal = ({
   /** react hooks */
   const { onCreate, onUpdate, onDelete } = useContext(KanbanContext)!;
   const [users, setUsers] = useState<User[]>([]);
+  const [projectTeam, setProjectTeam] = useState<string[]>([]);
 
   /** lib hooks */
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -54,10 +55,18 @@ const ProjectModal = ({
 
   /** useeffect hooks */
   useEffect(() => {
-    if (openModal) onOpen();
+    if (openModal) {
+      onOpen();
+      initProjectTeam();
+      if (!getUsersQuery.isFetched) {
+        fetchUsers();
+      } else {
+        setUsers(getUsersQuery.data?.data ?? []);
+      }
+    }
   }, [openModal]);
 
-  useEffect(() => {
+  const fetchUsers = () => {
     getUsersQuery
       .refetch()
       .then((response) => {
@@ -66,8 +75,23 @@ const ProjectModal = ({
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  };
 
+  /** sets the project team ids from the project users */
+  const initProjectTeam = () => {
+    if (!kanbanCard) return;
+
+    const projectUsers = (kanbanCard.object as { users: { id: string }[] })
+      .users;
+
+    if (!projectUsers) return;
+
+    const userIds = projectUsers.map((projectUser) => {
+      return projectUser.id;
+    });
+
+    setProjectTeam(userIds);
+  };
   /**
    * Sends the form data to the server to create the project
    * It calls the callback function with the results
@@ -77,6 +101,7 @@ const ProjectModal = ({
     const projectData = {
       name: formData.get("name")?.toString() ?? "",
       dueDate: formData.get("dueDate") as unknown as Date,
+      userIds: formData.getAll("project-team") as string[],
     };
 
     const createProjectResponse =
@@ -95,6 +120,7 @@ const ProjectModal = ({
       id: kanbanCard ? kanbanCard.id : "",
       name: formData.get("name")?.toString() ?? "",
       dueDate: formData.get("dueDate") as unknown as Date,
+      userIds: formData.getAll("project-team") as string[],
     };
 
     const updateProjectResponse =
@@ -160,6 +186,7 @@ const ProjectModal = ({
               isRequired
             />
             <Select
+              name="project-team"
               items={users}
               labelPlacement="outside"
               label="Project Team"
@@ -167,6 +194,7 @@ const ProjectModal = ({
               isMultiline={false}
               selectionMode="multiple"
               placeholder="Select Team"
+              defaultSelectedKeys={projectTeam}
               classNames={{
                 base: "w-full",
                 trigger: "min-h-12 py-2",

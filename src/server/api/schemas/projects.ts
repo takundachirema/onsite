@@ -5,6 +5,7 @@ export const idSchema = z.object({ id: z.string() });
 export const projectSchema = z.object({
   name: z.string(),
   dueDate: z.coerce.date(),
+  userIds: z.array(z.string()).optional(),
 });
 
 export const projectGetSchema = z.object({
@@ -18,4 +19,5 @@ export const projectUpdateSchema = z.object({
   name: z.string().optional(),
   dueDate: z.coerce.date().optional(),
   status: z.string().optional(),
+  userIds: z.array(z.string()).optional(),
 });

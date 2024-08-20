@@ -85,6 +85,7 @@ export type KanbanCardData = {
   progress: number;
   actions: SidebarItem[];
   object: object;
+  users?: number;
 };
 
 export type KanbanCardAction = "create" | "update" | "delete";
