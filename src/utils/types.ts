@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { type SVGProps } from "react";
 import { type IconType } from "react-icons/lib";
+import { roomTypes } from "./utils";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
@@ -68,14 +69,25 @@ export type StatusDataMap = {
   [key in StatusCode]: Status;
 };
 
-export type RoleCode = "owner" | "admin" | "guest" | "employee";
-export type Role = {
+export type UserRoleCode = "owner" | "admin" | "guest" | "employee";
+export type UserRole = {
   label: string;
-  code: RoleCode;
+  code: UserRoleCode;
   color: "default" | "primary" | "success" | "secondary" | undefined;
 };
-export type RoleDataMap = {
-  [key in RoleCode]: Role;
+export type UserRoleDataMap = {
+  [key in UserRoleCode]: UserRole;
+};
+
+export type RoomTypeCode = (typeof roomTypes)[number];
+
+export type RoomType = {
+  label: string;
+  code: RoomTypeCode;
+  color: "default" | "primary" | "success" | "secondary" | undefined;
+};
+export type RoomTypeDataMap = {
+  [key in RoomTypeCode]: RoomType;
 };
 
 export type KanbanCardData = {
@@ -86,7 +98,7 @@ export type KanbanCardData = {
   status: StatusCode;
   actions: SidebarItem[];
   object: object;
-  users?: number;
+  info?: { icon: React.ReactNode; quantity: number };
 };
 
 export type KanbanCardAction = "create" | "update" | "delete";

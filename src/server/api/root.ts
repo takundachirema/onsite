@@ -1,6 +1,7 @@
 import { usersRouter } from "$/src/server/api/routers/users";
 import { projectsRouter } from "$/src/server/api/routers/projects";
 import { tasksRouter } from "$/src/server/api/routers/tasks";
+import { roomsRouter } from "$/src/server/api/routers/rooms";
 import { createCallerFactory, createTRPCRouter } from "$/src/server/api/trpc";
 
 /**
@@ -12,6 +13,7 @@ export const appRouter = createTRPCRouter({
   users: usersRouter,
   projects: projectsRouter,
   tasks: tasksRouter,
+  rooms: roomsRouter,
 });
 
 // export type definition of API

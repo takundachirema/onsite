@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
-  type Role,
+  type UserRole,
   type KanbanCardAction,
-  type RoleCode,
+  type UserRoleCode,
 } from "$/src/utils/types";
 import {
   Modal,
@@ -70,7 +70,7 @@ const UserModal = ({
       });
   }, []);
 
-  const roles: Role[] = Object.values(roleDataMap);
+  const roles: UserRole[] = Object.values(roleDataMap);
   /**
    * Sends the form data to the server to create the user
    * It calls the callback function with the results
@@ -81,7 +81,7 @@ const UserModal = ({
       id: user ? user.id : "",
       name: formData.get("name")?.toString() ?? "",
       email: formData.get("email")?.toString() ?? "",
-      role: (formData.get("role")?.toString() ?? "employee") as RoleCode,
+      role: (formData.get("role")?.toString() ?? "employee") as UserRoleCode,
     };
 
     const createUserResponse = await createUserMutation.mutateAsync(userData);

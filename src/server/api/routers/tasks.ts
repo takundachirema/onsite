@@ -113,7 +113,7 @@ export const tasksRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const response: Response = {
         success: true,
-        message: "task updated",
+        message: "task deleted",
         data: {},
       };
 

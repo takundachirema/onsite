@@ -110,7 +110,7 @@ export const projectsRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const response: Response = {
         success: true,
-        message: "project updated",
+        message: "project deleted",
         data: {},
       };
 

@@ -2,7 +2,7 @@
 
 import KanbanBoard from "$/src/components/Kanban/KanbanBoard";
 import { useEffect, useState } from "react";
-import { FaPlusCircle } from "react-icons/fa";
+import { FaPlusCircle, FaUsers } from "react-icons/fa";
 import { api } from "$/src/trpc/react";
 import React from "react";
 
@@ -226,7 +226,10 @@ const OrganizationIdPage = () => {
       title: task.name,
       description: task.description,
       status: task.status,
-      users: task.users ? task.users.length : 0,
+      info: {
+        icon: <FaUsers />,
+        quantity: task.users ? task.users.length : 0,
+      },
       actions: [
         {
           label: "Create Task",
