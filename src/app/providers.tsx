@@ -8,6 +8,7 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { type ThemeProviderProps } from "next-themes/dist/types";
 import { TRPCReactProvider } from "$/src/trpc/react";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Provider as JotaiProvider } from "jotai";
 
 export interface ProvidersProps {
   children: React.ReactNode;
@@ -21,7 +22,9 @@ export function Providers({ children, themeProps }: ProvidersProps) {
     <ClerkProvider>
       <TRPCReactProvider>
         <NextUIProvider navigate={router.push}>
-          <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
+          <JotaiProvider>
+            <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
+          </JotaiProvider>
         </NextUIProvider>
       </TRPCReactProvider>
     </ClerkProvider>

@@ -7,8 +7,28 @@ import { IoMdAdd } from "react-icons/io";
 import { BiSolidBuildingHouse } from "react-icons/bi";
 import { MdBedroomParent, MdSpaceDashboard, MdTask } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
+import { useAtomValue, useAtom } from "jotai";
+import { projectsAtom, selectedProjectAtom } from "$/src/context/JotaiContext";
 
 const OrganizationLayout = ({ children }: { children: React.ReactNode }) => {
+  /** react hooks */
+
+  /** lib hooks */
+  const projects = useAtomValue(projectsAtom);
+  const [selectedProject, setSelectedProject] = useAtom(selectedProjectAtom);
+
+  /** api hooks */
+
+  const projectsMenu = projects.map((project) => {
+    return {
+      label: project.name,
+      icon: <IoMdAdd />,
+      callback: () => {
+        setSelectedProject(project);
+      },
+    };
+  });
+
   return (
     <main className="flex !h-[100%] flex-row justify-between">
       <div className="m-4 overflow-clip">
@@ -17,10 +37,18 @@ const OrganizationLayout = ({ children }: { children: React.ReactNode }) => {
           backgroundColor="transparent"
         >
           <Card shadow="sm" className="flex h-[100%] flex-col">
-            <Menu className="items-center gap-2">
+            <Menu className="flex flex-col gap-2">
+              <SidebarMenuItem
+                link="./projects"
+                label={
+                  selectedProject ? selectedProject.name : "Select Project"
+                }
+                icon={<BiSolidBuildingHouse />}
+                menuItems={projectsMenu}
+              ></SidebarMenuItem>
+              <Divider className="ms-6 w-[80%]" />
               <SidebarMenuItem
                 link="./dashboard"
-                active={false}
                 label={"Dashboard"}
                 icon={<MdSpaceDashboard />}
                 menuItems={[
@@ -32,20 +60,7 @@ const OrganizationLayout = ({ children }: { children: React.ReactNode }) => {
                     },
                   },
                 ]}
-              ></SidebarMenuItem>
-              <SidebarMenuItem
-                link="./projects"
-                label={"Projects"}
-                icon={<BiSolidBuildingHouse />}
-                menuItems={[
-                  {
-                    label: "Add Project",
-                    icon: <IoMdAdd />,
-                    callback: () => {
-                      console.log("*** pressed");
-                    },
-                  },
-                ]}
+                disabled={selectedProject ? false : true}
               ></SidebarMenuItem>
               <SidebarMenuItem
                 link="./tasks"
@@ -60,6 +75,7 @@ const OrganizationLayout = ({ children }: { children: React.ReactNode }) => {
                     },
                   },
                 ]}
+                disabled={selectedProject ? false : true}
               ></SidebarMenuItem>
               <SidebarMenuItem
                 link="./rooms"
@@ -74,8 +90,9 @@ const OrganizationLayout = ({ children }: { children: React.ReactNode }) => {
                     },
                   },
                 ]}
+                disabled={selectedProject ? false : true}
               ></SidebarMenuItem>
-              <Divider />
+              <Divider className="ms-6 w-[80%]" />
               <SidebarMenuItem
                 link="./users"
                 label={"Users"}
@@ -89,6 +106,7 @@ const OrganizationLayout = ({ children }: { children: React.ReactNode }) => {
                     },
                   },
                 ]}
+                disabled={selectedProject ? false : true}
               ></SidebarMenuItem>
             </Menu>
           </Card>

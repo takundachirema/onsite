@@ -14,12 +14,13 @@ import {
 import { type Project } from "@prisma/client";
 import ProjectModal from "$/src/components/Projects/ProjectModal";
 import { KanbanContext } from "$/src/context/KanbanContext";
+import { useSetAtom, useAtom } from "jotai";
+import { projectsAtom, selectedProjectAtom } from "$/src/context/JotaiContext";
 
 const OrganizationIdPage = () => {
-  const updateProjectMutation = api.projects.updateProject.useMutation();
-  const getProjectsQuery = api.projects.get.useQuery({}, { enabled: false });
+  /** react hooks */
 
-  /** Temporary variables to hold cards shown in modal before being edited or deleted */
+  //Temporary variables to hold cards shown in modal before being edited or deleted
   const [modalCard, setModalCard] = useState<KanbanCardData>({
     title: "",
     id: "",
@@ -30,19 +31,29 @@ const OrganizationIdPage = () => {
   });
   const [modalAction, setModalAction] = useState<KanbanCardAction>("create");
   const [openModal, setOpenModal] = useState(false);
-
-  /** board items */
   const [todoItems, setTodoItems] = useState<KanbanCardData[]>([]);
   const [inProgressItems, setInProgressItems] = useState<KanbanCardData[]>([]);
   const [doneItems, setDoneItems] = useState<KanbanCardData[]>([]);
   const [approvedItems, setApprovedItems] = useState<KanbanCardData[]>([]);
-  /** */
+
+  /** lib hooks */
+  const setProjects = useSetAtom(projectsAtom);
+  const [selectedProject, setSelectedProject] = useAtom(selectedProjectAtom);
+
+  /** api hooks */
+  const updateProjectMutation = api.projects.updateProject.useMutation();
+  const getProjectsQuery = api.projects.get.useQuery({}, { enabled: false });
 
   useEffect(() => {
     getProjectsQuery
       .refetch()
       .then((response) => {
         const projects = response.data ? response.data.data : [];
+
+        setProjects(projects);
+        if (!selectedProject && projects.length > 0) {
+          setSelectedProject(projects[0]);
+        }
 
         const todoCards: KanbanCardData[] = [];
         const inProgressCards: KanbanCardData[] = [];

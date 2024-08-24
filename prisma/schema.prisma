@@ -30,6 +30,7 @@ model Project {
     users           User[]
     tasks           Task[]
     rooms           Room[]
+    progress        Int @default(0)
     status          Status @default(todo)
     dueDate         DateTime @default(now())
 }
@@ -37,11 +38,12 @@ model Project {
 model Task {
     id              String      @id @default(uuid())
     name            String
+    description     String
     users           User[]
-    project         Project     @relation(fields: [projectId], references: [id])
+    project         Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
     projectId       String
-    room            Room        @relation(fields: [roomId], references: [id])
-    roomId          String
+    rooms           Room[]      
+    areaId          String?
     status          Status @default(todo)
     dueDate         DateTime @default(now())
 }   
@@ -52,10 +54,12 @@ model Room {
     type            RoomType
     budget          Budget?      
     tasks           Task[]
-    project         Project     @relation(fields: [projectId], references: [id])
+    project         Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
     projectId       String
+    progress        Int @default(0)
     status          Status @default(todo)
     dueDate         DateTime @default(now())
+	@@map("Room")
 }
 
 model Budget{
@@ -78,16 +82,19 @@ model BudgetItem {
 }
 
 enum RoomType {
-    bedroom
+    foyer
+    lounge
+    passage
     kitchen
+    diningroom
+    bedroom
     bathroom
     study
-    pool
+    basement
     laundy
     gym
     garage
-    livingroom
-    foyer
+    other
 }
 
 enum Status {
