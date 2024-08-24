@@ -9,7 +9,7 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 export interface SidebarItem {
   label: string;
   icon: React.ReactNode;
-  callback(arg: any): void;
+  callback(arg?: any): void;
   class?: string;
 }
 
@@ -81,8 +81,9 @@ export type RoleDataMap = {
 export type KanbanCardData = {
   id: string;
   title: string;
+  description?: string;
+  progress?: number;
   status: StatusCode;
-  progress: number;
   actions: SidebarItem[];
   object: object;
   users?: number;

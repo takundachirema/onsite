@@ -68,17 +68,22 @@ const KanbanCard = ({
           </Dropdown>
         </div>
       </CardHeader>
-      <CardBody className="px-2 py-0">
-        <Progress
-          size="sm"
-          value={cardData.progress}
-          color="primary"
-          classNames={{
-            value: "text-xs",
-          }}
-          showValueLabel={true}
-          className="max-w-md !p-0"
-        />
+      <CardBody className="gap-1 px-2 py-0 text-small text-default-400">
+        {cardData.description && (
+          <p className="line-clamp-2">{cardData.description}</p>
+        )}
+        {cardData.progress && (
+          <Progress
+            size="sm"
+            value={cardData.progress}
+            color="primary"
+            classNames={{
+              value: "text-xs",
+            }}
+            showValueLabel={true}
+            className="max-w-md !p-0"
+          />
+        )}
       </CardBody>
       <CardFooter className="justify-between p-2">
         <Dropdown>
