@@ -72,7 +72,7 @@ const KanbanCard = ({
         {cardData.description && (
           <p className="line-clamp-2">{cardData.description}</p>
         )}
-        {cardData.progress && (
+        {cardData.progress != undefined && (
           <Progress
             size="sm"
             value={cardData.progress}
@@ -145,11 +145,11 @@ const KanbanCard = ({
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>
-        {cardData.users !== undefined && (
+        {cardData.info !== undefined && (
           <Chip>
             <div className="flex flex-row items-center gap-4 rounded-full">
-              <FaUsers />
-              <p>{cardData.users}</p>
+              {cardData.info.icon}
+              <p>{cardData.info.quantity}</p>
             </div>
           </Chip>
         )}
