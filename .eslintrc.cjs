@@ -17,6 +17,7 @@ const config = {
     "eslint-disable @typescript-eslint/no-unsafe-assignment": "off",
     "eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain":
       "off",
+    "eslint-disable @typescript-eslint/no-misused-promises": "off",
     "@typescript-eslint/consistent-type-imports": [
       "warn",
       {

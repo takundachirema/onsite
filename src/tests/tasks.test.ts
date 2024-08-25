@@ -38,4 +38,41 @@ describe("tasks", () => {
 
     expect(taskData.name).toEqual("Paint");
   });
+
+  test("update a task", async () => {
+    const ctx = await createTestContext(true);
+    const caller = createCaller(ctx);
+
+    let createTaskResponse = await caller.tasks.createTask({
+      name: "Paint",
+      description: "Paint all the walls of the house",
+      dueDate: new Date(),
+      projectId: projectData.id,
+    });
+    let taskData = createTaskResponse.data;
+    expect(taskData.name).toEqual("Paint");
+
+    createTaskResponse = await caller.tasks.createTask({
+      name: "Demolish",
+      description: "Demolish walls",
+      dueDate: new Date(),
+      projectId: projectData.id,
+    });
+    taskData = createTaskResponse.data;
+    expect(taskData.name).toEqual("Demolish");
+
+    // Update the task to done - We expect the project progress to update to 50% complete
+    const updateTaskResponse = await caller.tasks.updateTask({
+      id: taskData.id,
+      status: "done",
+    });
+    taskData = updateTaskResponse.data;
+
+    expect(taskData.status).toEqual("done");
+
+    const projectResponse = await caller.projects.getOne({
+      id: projectData.id,
+    });
+    expect(projectResponse?.progress).toEqual(50);
+  });
 });

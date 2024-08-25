@@ -43,9 +43,11 @@ model Task {
     project         Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
     projectId       String
     rooms           Room[]      
-    areaId          String?
     status          Status @default(todo)
     dueDate         DateTime @default(now())
+    // This field is to identify whether we stop recursion in the db custom update method
+    // TODO: Remove it once Prisma introduces custom arguments to update methods
+    progressUpdate  Boolean? 
 }   
 
 model Room {
