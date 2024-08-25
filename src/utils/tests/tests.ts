@@ -9,6 +9,9 @@ import { faker } from "@faker-js/faker";
 
 export async function cleanUpDatabase(db: PrismaClient) {
   await db.user.deleteMany({});
+  await db.task.deleteMany({});
+  await db.room.deleteMany({});
+  await db.project.deleteMany({});
 }
 
 /**

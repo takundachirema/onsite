@@ -227,7 +227,7 @@ const OrganizationIdPage = () => {
       id: project.id,
       title: project.name,
       status: project.status,
-      progress: 90,
+      progress: project.progress,
       info: {
         icon: <FaUsers />,
         quantity: project.users ? project.users.length : 0,
