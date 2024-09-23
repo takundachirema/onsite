@@ -6,7 +6,7 @@ import SidebarMenuItem from "$/src/components/Sidebar/sidebarMenuItem";
 import { IoMdAdd } from "react-icons/io";
 import { BiSolidBuildingHouse } from "react-icons/bi";
 import { MdBedroomParent, MdSpaceDashboard, MdTask } from "react-icons/md";
-import { FaUser } from "react-icons/fa";
+import { FaMoneyBill, FaUser } from "react-icons/fa";
 import { useAtomValue, useAtom } from "jotai";
 import { projectsAtom, selectedProjectAtom } from "$/src/context/JotaiContext";
 
@@ -93,6 +93,21 @@ const OrganizationLayout = ({ children }: { children: React.ReactNode }) => {
                 disabled={selectedProject ? false : true}
               ></SidebarMenuItem>
               <Divider className="ms-6 w-[80%]" />
+              <SidebarMenuItem
+                link="./expenses"
+                label={"Expenses"}
+                icon={<FaMoneyBill />}
+                menuItems={[
+                  {
+                    label: "Add Expense",
+                    icon: <IoMdAdd />,
+                    callback: () => {
+                      console.log("*** pressed");
+                    },
+                  },
+                ]}
+                disabled={selectedProject ? false : true}
+              ></SidebarMenuItem>
               <SidebarMenuItem
                 link="./users"
                 label={"Users"}

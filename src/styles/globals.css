@@ -17,3 +17,13 @@
 .ps-sidebar-container {
   overflow: hidden !important;
 }
+
+html,
+body {
+  height: 100%;
+}
+
+[data-overlay-container="true"] {
+  height: 80%;
+  width: 100%;
+}

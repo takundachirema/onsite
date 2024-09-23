@@ -30,6 +30,7 @@ model Project {
     users           User[]
     tasks           Task[]
     rooms           Room[]
+    expense         Expense[] 
     progress        Int @default(0)
     status          Status @default(todo)
     dueDate         DateTime @default(now())
@@ -42,7 +43,8 @@ model Task {
     users           User[]
     project         Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
     projectId       String
-    rooms           Room[]      
+    rooms           Room[]
+    expense         Expense[]      
     status          Status @default(todo)
     dueDate         DateTime @default(now())
     // This field is to identify whether we stop recursion in the db custom update method
@@ -54,33 +56,28 @@ model Room {
     id              String      @id @default(uuid())
     name            String
     type            RoomType
-    budget          Budget?      
     tasks           Task[]
     project         Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
     projectId       String
     progress        Int @default(0)
     status          Status @default(todo)
     dueDate         DateTime @default(now())
-	@@map("Room")
 }
 
-model Budget{
+model Expense {
     id              String      @id @default(uuid())
     name            String
-    budgetItems     BudgetItem[]
-    room            Room        @relation(fields: [roomId], references: [id])
-    roomId          String      @unique
-}
-
-model BudgetItem {
-    id              String      @id @default(uuid())
-    name            String
-    quantity        Int
-    cost            Float
-    totalCost       Float
-    notes           String
-    budget          Budget     @relation(fields: [budgetId], references: [id])
-    budgetId        String
+    type            ExpenseType
+    estimateQty     Float
+    estimatePrice   Float
+    quantity        Float?
+    price           Float?
+    project         Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    projectId       String
+    task            Task?        @relation(fields: [taskId], references: [id], onDelete: Cascade)
+    taskId          String?
+    estimateCost    Float @default(0)
+    cost            Float @default(0)
 }
 
 enum RoomType {
@@ -111,4 +108,11 @@ enum Role {
     admin
     guest
     employee
+}
+
+enum ExpenseType {
+    material
+    labour
+    fee
+    other
 }

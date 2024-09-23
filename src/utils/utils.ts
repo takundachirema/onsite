@@ -1,6 +1,10 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { type UserRoleDataMap, type StatusDataMap } from "./types";
+import {
+  type UserRoleDataMap,
+  type StatusDataMap,
+  type ExpenseTypeDataMap,
+} from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -20,6 +24,13 @@ export const roleDataMap: UserRoleDataMap = {
   employee: { label: "Employee", code: "employee", color: "default" },
 };
 
+export const expenseTypeDataMap: ExpenseTypeDataMap = {
+  material: { label: "Material", code: "material", color: "success" },
+  labour: { label: "Labour", code: "labour", color: "primary" },
+  fee: { label: "Fee", code: "fee", color: "secondary" },
+  other: { label: "Other", code: "other", color: "default" },
+};
+
 export const roomTypes = [
   "foyer",
   "lounge",
@@ -35,3 +46,5 @@ export const roomTypes = [
   "garage",
   "other",
 ] as const;
+
+export const expenseTypes = ["material", "labour", "fee", "other"] as const;

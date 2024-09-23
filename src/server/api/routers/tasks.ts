@@ -58,6 +58,8 @@ export const tasksRouter = createTRPCRouter({
         users: { connect: userIds.map((userId) => ({ id: userId })) },
       };
 
+      console.log("** task create");
+      console.log(taskData);
       const task = await ctx.db.task.create({
         data: taskData,
         include: {

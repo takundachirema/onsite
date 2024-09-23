@@ -8,6 +8,7 @@ import { createInnerTRPCContext } from "$/src/server/api/trpc";
 import { faker } from "@faker-js/faker";
 
 export async function cleanUpDatabase(db: PrismaClient) {
+  await db.expense.deleteMany({});
   await db.user.deleteMany({});
   await db.task.deleteMany({});
   await db.room.deleteMany({});

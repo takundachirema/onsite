@@ -11,6 +11,7 @@ const createPrismaClient = () => {
     query: {
       task: {
         async update({ model, operation, args, query }) {
+          //
           if (args.data.progressUpdate === false) {
             return query(args);
           }
@@ -29,6 +30,22 @@ const createPrismaClient = () => {
           return new Promise<Task>((resolve) => {
             resolve(result);
           });
+        },
+      },
+    },
+    result: {
+      expense: {
+        estimateCost: {
+          needs: { estimatePrice: true, estimateQty: true },
+          compute(expense) {
+            return (expense.estimatePrice * expense.estimateQty).toFixed(2);
+          },
+        },
+        cost: {
+          needs: { price: true, quantity: true },
+          compute(expense) {
+            return ((expense.price ?? 0) * (expense.quantity ?? 0)).toFixed(2);
+          },
         },
       },
     },

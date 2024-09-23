@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { type SVGProps } from "react";
-import { type IconType } from "react-icons/lib";
-import { roomTypes } from "./utils";
+import { expenseTypes, type roomTypes } from "./utils";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
@@ -88,6 +87,17 @@ export type RoomType = {
 };
 export type RoomTypeDataMap = {
   [key in RoomTypeCode]: RoomType;
+};
+
+export type ExpenseTypeCode = (typeof expenseTypes)[number];
+
+export type ExpenseType = {
+  label: string;
+  code: ExpenseTypeCode;
+  color: "default" | "primary" | "success" | "secondary" | undefined;
+};
+export type ExpenseTypeDataMap = {
+  [key in ExpenseTypeCode]: ExpenseType;
 };
 
 export type KanbanCardData = {

@@ -51,7 +51,9 @@ const OrganizationIdPage = () => {
         const projects = response.data ? response.data.data : [];
 
         setProjects(projects);
-        if (!selectedProject && projects.length > 0) {
+        if (projects.length === 0) {
+          setSelectedProject(undefined);
+        } else if (!selectedProject) {
           setSelectedProject(projects[0]);
         }
 
@@ -95,6 +97,9 @@ const OrganizationIdPage = () => {
     const project = response.data;
     if (response.success) {
       addToKanbanLaneItems(project);
+      if (!selectedProject) {
+        setSelectedProject(project);
+      }
     }
   };
 
