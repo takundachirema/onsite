@@ -21,6 +21,7 @@ import { useContext, useEffect, useState } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { useOrganization } from "@clerk/nextjs";
 import { KanbanContext } from "$/src/context/KanbanContext";
+import { currencies } from "$/src/utils/currencies";
 
 interface Props {
   openModal: boolean;
@@ -102,6 +103,7 @@ const ProjectModal = ({
       name: formData.get("name")?.toString() ?? "",
       dueDate: formData.get("dueDate") as unknown as Date,
       userIds: formData.getAll("project-team") as string[],
+      currency: formData.get("currency")?.toString() ?? "ZAR",
     };
 
     const createProjectResponse =
@@ -121,6 +123,7 @@ const ProjectModal = ({
       name: formData.get("name")?.toString() ?? "",
       dueDate: formData.get("dueDate") as unknown as Date,
       userIds: formData.getAll("project-team") as string[],
+      currency: formData.get("currency")?.toString() ?? "ZAR",
     };
 
     const updateProjectResponse =
@@ -170,6 +173,43 @@ const ProjectModal = ({
               disabled={action === "delete" ? true : false}
               required
             />
+            <Select
+              name="currency"
+              items={currencies}
+              labelPlacement="outside"
+              label="Project Currency"
+              variant="flat"
+              isMultiline={false}
+              selectionMode="single"
+              placeholder="Select Currency"
+              defaultSelectedKeys={[(kanbanCard.object as Project).currency]}
+              classNames={{
+                base: "w-full",
+                trigger: "min-h-12 py-2",
+              }}
+              renderValue={(items) => {
+                return (
+                  <div className="flex flex-wrap gap-2">
+                    {items.map((item) => (
+                      <Chip key={item.key}>{item.data?.code}</Chip>
+                    ))}
+                  </div>
+                );
+              }}
+            >
+              {(currency) => (
+                <SelectItem key={currency.code} textValue={currency.code}>
+                  <div className="flex items-center gap-2">
+                    <div className="flex flex-col">
+                      <span className="text-small">{currency.symbol}</span>
+                      <span className="text-tiny text-default-400">
+                        {currency.name}
+                      </span>
+                    </div>
+                  </div>
+                </SelectItem>
+              )}
+            </Select>
             <DatePicker
               defaultValue={
                 (kanbanCard.object as Project).dueDate

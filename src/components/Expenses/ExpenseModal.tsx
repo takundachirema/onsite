@@ -199,6 +199,7 @@ const ExpenseModal = ({
               selectionMode="single"
               placeholder="Assign Task"
               defaultSelectedKeys={[expense?.taskId?.toString() ?? ""]}
+              isRequired
               classNames={{
                 base: "w-full",
                 trigger: "min-h-12 py-2",

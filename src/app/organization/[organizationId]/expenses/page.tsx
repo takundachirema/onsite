@@ -10,7 +10,6 @@ import {
   TableHeader,
   TableColumn,
   TableBody,
-  TableSlots,
   TableRow,
   TableCell,
   Chip,
@@ -23,6 +22,7 @@ import { useEffect, useState } from "react";
 import { FaEdit, FaPlusCircle, FaTrash } from "react-icons/fa";
 import { useAtomValue } from "jotai";
 import { selectedProjectAtom } from "$/src/context/JotaiContext";
+import { BiMinus, BiTrendingDown, BiTrendingUp } from "react-icons/bi";
 
 const expenseColumns = [
   { name: "Task", uid: "task" },
@@ -97,6 +97,10 @@ const ExpensesPage = () => {
   };
 
   const createTotalExpenses = () => {
+    if (expenses.length === 0) {
+      return;
+    }
+
     const totalEstimateCost = expenses.reduce<number>(
       (totalCost, expense) => Number(totalCost) + Number(expense.estimateCost),
       0,
@@ -108,7 +112,7 @@ const ExpensesPage = () => {
 
     const totalExpense: Expense = {
       id: "",
-      name: "Total Expenses",
+      name: "Total",
       type: "other",
       estimateQty: 0,
       estimatePrice: 0,
@@ -262,6 +266,13 @@ const ExpensesPage = () => {
                 radius="full"
                 size="sm"
               >
+                {expense && expense?.cost > expense?.estimateCost ? (
+                  <BiTrendingDown size={20} />
+                ) : expense && expense?.cost < expense?.estimateCost ? (
+                  <BiTrendingUp size={20} />
+                ) : (
+                  <BiMinus size={20} />
+                )}
                 {expense?.cost}
               </Button>
             </div>
@@ -317,17 +328,19 @@ const ExpensesPage = () => {
       />
       <div className="flex  w-full flex-col justify-between">
         <Table isHeaderSticky={true} className="!h-[95%] w-full">
-          <TableHeader>
+          <TableHeader className="p-12">
             {columns.map((column) => (
               <TableColumn
-                className="align-top text-sm"
+                className="p-2 align-top text-sm"
                 key={column.uid}
                 align={column.uid === "actions" ? "center" : "start"}
               >
                 {column.name}
-                <div className="mb-2 mt-2 font-normal">
-                  {renderCell(totalExpense, column.uid)}
-                </div>
+                {totalExpense && (
+                  <div className="mb-2 mt-2 font-normal">
+                    {renderCell(totalExpense, column.uid)}
+                  </div>
+                )}
               </TableColumn>
             ))}
           </TableHeader>

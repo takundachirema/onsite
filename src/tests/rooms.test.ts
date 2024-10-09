@@ -20,6 +20,7 @@ describe("rooms", () => {
     const createProjectResponse = await caller.projects.createProject({
       name: "Project 1",
       dueDate: new Date(),
+      currency: "ZAR",
     });
     projectData = createProjectResponse.data;
   });
