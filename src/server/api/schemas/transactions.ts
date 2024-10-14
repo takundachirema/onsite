@@ -10,6 +10,7 @@ export const transactionSchema = z.object({
   vendor: z.string().optional(),
   date: z.coerce.date(),
   notes: z.string().optional(),
+  ref: z.string().optional(),
   quantity: z.number(),
   price: z.number(),
 });
@@ -17,6 +18,7 @@ export const transactionSchema = z.object({
 export const transactionGetSchema = z.object({
   id: z.string().optional(),
   projectId: z.string().optional(),
+  expenseId: z.string().optional(),
 });
 
 export const transactionUpdateSchema = z.object({

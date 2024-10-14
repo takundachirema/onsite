@@ -123,51 +123,53 @@ const ExpensesDashboard = () => {
   }, [expensesData]);
 
   return (
-    <div className="mb-4 flex w-full flex-row gap-4">
-      <Card className="flex h-fit w-fit flex-col items-center p-8">
-        <Chip
-          className="absolute right-0 top-0 m-1"
-          color="default"
-          size="sm"
-          variant="solid"
-        >
-          Planned
-        </Chip>
-        <p className="text-4xl font-thin">
-          {`${currencies.find((currency) => currency.code === selectedProject?.currency)?.symbol} `}
-          {estimateCostTotal}
-        </p>
-        <div className="relative">
-          <Doughnut data={estimateCostChartData}></Doughnut>
-        </div>
-      </Card>
-      <Card className="flex h-fit w-fit flex-col items-center p-8">
-        <Chip
-          className="absolute right-0 top-0 m-1"
-          color="primary"
-          size="sm"
-          variant="solid"
-        >
-          Actual
-        </Chip>
-        <p className="text-4xl font-thin">
-          {`${currencies.find((currency) => currency.code === selectedProject?.currency)?.symbol} `}
-          {costTotal}
-        </p>
-
-        <div className="relative">
-          <Doughnut data={costChartData} />
-          <Button
-            isIconOnly
-            radius="full"
-            className="absolute left-[35%] top-[40%] h-[30%] w-[30%] rounded-full text-xl font-thin"
-            color={costTotal > estimateCostTotal ? "danger" : "success"}
+    <div className="w-full">
+      <div className="mb-4 flex w-full flex-row gap-4">
+        <Card className="flex h-fit w-1/2 flex-col items-center p-8">
+          <Chip
+            className="absolute right-0 top-0 m-1"
+            color="default"
+            size="sm"
+            variant="solid"
           >
+            Planned Expenditure
+          </Chip>
+          <p className="text-4xl font-thin">
             {`${currencies.find((currency) => currency.code === selectedProject?.currency)?.symbol} `}
-            {`${estimateCostTotal - costTotal} `}
-          </Button>
-        </div>
-      </Card>
+            {estimateCostTotal}
+          </p>
+          <div className="relative">
+            <Doughnut data={estimateCostChartData}></Doughnut>
+          </div>
+        </Card>
+        <Card className="flex h-fit w-1/2 flex-col items-center p-8">
+          <Chip
+            className="absolute right-0 top-0 m-1"
+            color="primary"
+            size="sm"
+            variant="solid"
+          >
+            Actual Expenditure
+          </Chip>
+          <p className="text-4xl font-thin">
+            {`${currencies.find((currency) => currency.code === selectedProject?.currency)?.symbol} `}
+            {costTotal}
+          </p>
+
+          <div className="relative">
+            <Doughnut data={costChartData} />
+            <Button
+              isIconOnly
+              radius="full"
+              className="absolute left-[35%] top-[40%] h-[30%] w-[30%] rounded-full text-xl font-thin"
+              color={costTotal > estimateCostTotal ? "danger" : "success"}
+            >
+              {`${currencies.find((currency) => currency.code === selectedProject?.currency)?.symbol} `}
+              {`${estimateCostTotal - costTotal} `}
+            </Button>
+          </div>
+        </Card>
+      </div>
     </div>
   );
 };

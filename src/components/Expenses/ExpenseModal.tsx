@@ -42,9 +42,7 @@ const ExpenseModal = ({
   expense,
 }: Props) => {
   /** react hooks */
-  const [expenses, setExpenses] = useState<Expense[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [roomTeam, setRoomTeam] = useState<string[]>([]);
 
   /** lib hooks */
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -76,17 +74,6 @@ const ExpenseModal = ({
       }
     }
   }, [openModal]);
-
-  useEffect(() => {
-    getExpensesQuery
-      .refetch()
-      .then((response) => {
-        setExpenses(response.data ? response.data.data : []);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
 
   const fetchTasks = () => {
     getTasksQuery

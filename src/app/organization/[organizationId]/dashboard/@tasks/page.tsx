@@ -301,7 +301,7 @@ const TasksDashboard = () => {
             size="sm"
             variant="solid"
           >
-            Projections
+            Projected Completion
           </Chip>
           <div className="flex w-full flex-row items-center gap-4">
             {projectedCompletionPercentage >= 100 && (
@@ -333,7 +333,7 @@ const TasksDashboard = () => {
             size="sm"
             variant="solid"
           >
-            Planned
+            Planned Completion
           </Chip>
           <p className="text-4xl font-thin">
             {`${plannedCompletionPercentage.toFixed(0)}% Complete`}
@@ -349,7 +349,7 @@ const TasksDashboard = () => {
             size="sm"
             variant="solid"
           >
-            Actual
+            Actual Completion
           </Chip>
           <p className="text-4xl font-thin">
             {`${completionPercentage.toFixed(0)}% Complete`}

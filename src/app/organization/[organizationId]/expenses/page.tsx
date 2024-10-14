@@ -19,21 +19,23 @@ import {
 import { type Expense } from "@prisma/client";
 import React from "react";
 import { useEffect, useState } from "react";
-import { FaEdit, FaPlusCircle, FaTrash } from "react-icons/fa";
+import { FaEdit, FaList, FaPlusCircle, FaTrash } from "react-icons/fa";
 import { useAtomValue } from "jotai";
 import { selectedProjectAtom } from "$/src/context/JotaiContext";
 import { BiMinus, BiTrendingDown, BiTrendingUp } from "react-icons/bi";
+import TransactionsModal from "$/src/components/Transactions/TransactionsModal";
 
 const expenseColumns = [
   { name: "Task", uid: "task" },
   { name: "Expense", uid: "expense" },
   { name: "Type", uid: "type" },
-  { name: "Estimate Qty", uid: "estimate_qty" },
+  { name: "Est Qty", uid: "estimate_qty" },
+  { name: "Est Price", uid: "estimate_price" },
+  { name: "Est Cost", uid: "estimate_cost" },
   { name: "Quantity", uid: "quantity" },
-  { name: "Estimate Price", uid: "estimate_price" },
   { name: "Price", uid: "price" },
-  { name: "Estimate Cost", uid: "estimate_cost" },
   { name: "Cost", uid: "cost" },
+  { name: "Overspend", uid: "diff" },
   { name: "Actions", uid: "actions" },
 ];
 
@@ -41,6 +43,7 @@ const ExpensesPage = () => {
   /** react hooks */
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [openModal, setOpenModal] = useState(false);
+  const [openTransactionsModal, setOpenTransactionsModal] = useState(false);
   const [modalAction, setModalAction] = useState<KanbanCardAction>("create");
   const [expense, setExpense] = useState<Expense | undefined>(undefined);
   const [columns, setColumns] = useState(expenseColumns);
@@ -94,6 +97,11 @@ const ExpensesPage = () => {
     setExpense(expense);
     setModalAction("delete");
     setOpenModal(true);
+  };
+
+  const manageExpenseTransactions = (expense: Expense | undefined) => {
+    setExpense(expense);
+    setOpenTransactionsModal(true);
   };
 
   const createTotalExpenses = () => {
@@ -157,7 +165,9 @@ const ExpensesPage = () => {
 
   const onClose = () => {
     setOpenModal(false);
+    setOpenTransactionsModal(false);
   };
+
   const renderCell = React.useCallback(
     (
       expense:
@@ -235,23 +245,30 @@ const ExpensesPage = () => {
         case "estimate_cost":
           return (
             <div className="flex flex-col">
-              {expense?.id ? (
-                <p className="text-bold text-sm capitalize">
-                  {expense?.estimateCost}
-                </p>
-              ) : (
-                <Chip
-                  className="capitalize"
-                  color="default"
-                  size="md"
-                  variant="flat"
-                >
-                  {expense?.estimateCost}
-                </Chip>
-              )}
+              <Chip
+                className="capitalize"
+                color="default"
+                size="md"
+                variant="flat"
+              >
+                {expense?.estimateCost}
+              </Chip>
             </div>
           );
         case "cost":
+          return (
+            <div className="flex flex-col">
+              <Chip
+                className="capitalize"
+                color="default"
+                size="md"
+                variant="flat"
+              >
+                {expense?.cost}
+              </Chip>
+            </div>
+          );
+        case "diff":
           return (
             <div className="flex flex-col">
               <Button
@@ -273,7 +290,7 @@ const ExpensesPage = () => {
                 ) : (
                   <BiMinus size={20} />
                 )}
-                {expense?.cost}
+                {(expense?.cost ?? 0) - (expense?.estimateCost ?? 0)}
               </Button>
             </div>
           );
@@ -282,6 +299,17 @@ const ExpensesPage = () => {
             <div className="flex flex-row justify-center gap-2">
               {expense?.id && (
                 <div className="flex flex-row justify-center gap-2">
+                  <Tooltip content="Manage transactions">
+                    <Button
+                      isIconOnly
+                      onClick={() => {
+                        manageExpenseTransactions(expense);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <FaList />
+                    </Button>
+                  </Tooltip>
                   <Tooltip content="Edit expense">
                     <Button
                       isIconOnly
@@ -326,8 +354,11 @@ const ExpensesPage = () => {
           },
         ]}
       />
-      <div className="flex  w-full flex-col justify-between">
-        <Table isHeaderSticky={true} className="!h-[95%] w-full">
+      <div className="flex w-full flex-col justify-between">
+        <Table
+          isHeaderSticky={true}
+          className="!h-[95%] w-full overflow-hidden"
+        >
           <TableHeader className="p-12">
             {columns.map((column) => (
               <TableColumn
@@ -337,14 +368,14 @@ const ExpensesPage = () => {
               >
                 {column.name}
                 {totalExpense && (
-                  <div className="mb-2 mt-2 font-normal">
+                  <div className="mb-2 mt-4 border-t-1 border-gray-500 pt-4 font-normal">
                     {renderCell(totalExpense, column.uid)}
                   </div>
                 )}
               </TableColumn>
             ))}
           </TableHeader>
-          <TableBody items={expenses}>
+          <TableBody className="overflow-hidden" items={expenses}>
             {(item) => (
               <TableRow key={item.id}>
                 {(columnKey) => (
@@ -361,7 +392,12 @@ const ExpensesPage = () => {
         openModal={openModal}
         action={modalAction}
         expense={expense}
-      ></ExpenseModal>
+      />
+      <TransactionsModal
+        expense={expense}
+        openModal={openTransactionsModal}
+        onClose={onClose}
+      />
     </div>
   );
 };

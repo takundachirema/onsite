@@ -127,9 +127,7 @@ const OrganizationLayout = ({ children }: { children: React.ReactNode }) => {
           </Card>
         </Sidebar>
       </div>
-      <div className="m-4 flex w-full gap-x-7 overflow-y-scroll">
-        {children}
-      </div>
+      <div className="m-4 flex w-full gap-x-7 overflow-auto">{children}</div>
     </main>
   );
 };
