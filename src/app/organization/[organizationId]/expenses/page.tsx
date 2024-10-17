@@ -130,6 +130,8 @@ const ExpensesPage = () => {
       taskId: "",
       estimateCost: totalEstimateCost,
       cost: totalCost,
+      updatedTime: new Date(),
+      updatedDate: "",
     };
 
     setTotalExpense(totalExpense);
@@ -238,6 +240,7 @@ const ExpensesPage = () => {
           return (
             <div className="flex flex-col">
               <p className="text-bold text-sm capitalize">
+                {selectedProject?.currencySymbol}
                 {expense?.price?.toFixed(2)}
               </p>
             </div>
@@ -251,6 +254,7 @@ const ExpensesPage = () => {
                 size="md"
                 variant="flat"
               >
+                {selectedProject?.currencySymbol}
                 {expense?.estimateCost}
               </Chip>
             </div>
@@ -264,6 +268,7 @@ const ExpensesPage = () => {
                 size="md"
                 variant="flat"
               >
+                {selectedProject?.currencySymbol}
                 {expense?.cost}
               </Chip>
             </div>
@@ -290,7 +295,7 @@ const ExpensesPage = () => {
                 ) : (
                   <BiMinus size={20} />
                 )}
-                {(expense?.cost ?? 0) - (expense?.estimateCost ?? 0)}
+                {(expense?.estimateCost ?? 0) - (expense?.cost ?? 0)}
               </Button>
             </div>
           );

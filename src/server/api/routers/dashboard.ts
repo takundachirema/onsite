@@ -45,6 +45,28 @@ export const dashboardRouter = createTRPCRouter({
       return { ...response, ...{ data: data } };
     }),
 
+  getExpensesProjectionsData: publicProcedure
+    .input(tasksDataSchema)
+    .query(async ({ input, ctx }) => {
+      const response: Response = {
+        success: true,
+        message: "expenses data obtained",
+        data: {},
+      };
+
+      // get the expenses data
+      const expenses = await ctx.db.expense.findMany({
+        orderBy: {
+          updatedTime: "asc",
+        },
+        where: {
+          ...statusesDataSchema.parse(input),
+        },
+      });
+
+      return { ...response, ...{ data: expenses } };
+    }),
+
   getTasksData: publicProcedure
     .input(tasksDataSchema)
     .query(async ({ input, ctx }) => {

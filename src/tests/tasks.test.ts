@@ -20,8 +20,10 @@ describe("tasks", () => {
     const caller = createCaller(ctx);
     const createProjectResponse = await caller.projects.createProject({
       name: "Project 1",
+      startDate: new Date(),
       dueDate: new Date(),
       currency: "ZAR",
+      currencySymbol: "R",
     });
     projectData = createProjectResponse.data;
   });

@@ -246,6 +246,14 @@ const TasksDashboard = () => {
     return [labels, regressionLabels];
   };
 
+  /**
+   * For each date in the range we find the number of approved tasks
+   * - When a task is set to approved we increase the counter
+   * - When a task is set from approved to not approved we decrease the counter
+   * @param startDate
+   * @param endDate
+   * @returns
+   */
   const getProjectionData = (startDate: Date, endDate: Date) => {
     let approvedTasks = 0;
     const data: number[] = [];
@@ -255,6 +263,7 @@ const TasksDashboard = () => {
     const currentDate = startDate;
     while (currentDate <= endDate) {
       const currentDateStr = currentDate.toDateString();
+      // because the statuses are ordered by date we can iterate until the date changes
       while (taskProjectionsData[position]?.date === currentDateStr) {
         const status = taskProjectionsData[position];
         if (status?.status === "approved") {
@@ -272,6 +281,13 @@ const TasksDashboard = () => {
     return data;
   };
 
+  /**
+   * Build a regression model from the x data points of the line chart
+   * - Then predict the y-point or completed tasks for the last day of the project
+   * @param xAxis
+   * @param yAxis
+   * @returns
+   */
   const getRegressionData = (xAxis: number[], yAxis: number[]) => {
     const regressionData: DataPoint[] = [];
 
@@ -321,7 +337,26 @@ const TasksDashboard = () => {
             </p>
           </div>
           <div className="relative">
-            <Line options={{ responsive: true }} data={projectionsChartData} />
+            <Line
+              options={{
+                responsive: true,
+                scales: {
+                  y: {
+                    title: {
+                      display: true,
+                      text: "Number Of Tasks",
+                    },
+                  },
+                  x: {
+                    title: {
+                      display: true,
+                      text: "Time In Days",
+                    },
+                  },
+                },
+              }}
+              data={projectionsChartData}
+            />
           </div>
         </Card>
       </div>

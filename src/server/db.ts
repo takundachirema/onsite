@@ -202,6 +202,16 @@ const createPrismaClient = () => {
           return query(args);
         },
       },
+      expense: {
+        async update({ model, operation, args, query }) {
+          // stop infinite recursion
+          if (args.data.cost) {
+            args.data.updatedTime = new Date();
+            args.data.updatedDate = new Date().toDateString();
+          }
+          return query(args);
+        },
+      },
     },
     result: {
       expense: {

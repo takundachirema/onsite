@@ -21,8 +21,10 @@ describe("dashboard", () => {
     const caller = createCaller(ctx);
     const createProjectResponse = await caller.projects.createProject({
       name: "Project 1",
+      startDate: new Date(),
       dueDate: new Date(Date.now() + 4 * 24 * 60 * 60_000),
       currency: "ZAR",
+      currencySymbol: "R",
     });
     projectData = createProjectResponse.data;
   });
@@ -111,5 +113,53 @@ describe("dashboard", () => {
     const tasksData = tasksDataResponse.data;
 
     expect(tasksData.length).toEqual(12);
+  });
+
+  test("get expenses projections", async () => {
+    const ctx = await createTestContext(true);
+    const caller = createCaller(ctx);
+
+    const createTaskResponse = await caller.tasks.createTask({
+      name: "Paint",
+      description: "Paint all the walls of the house",
+      dueDate: new Date(),
+      projectId: projectData.id,
+    });
+    const taskData = createTaskResponse.data;
+
+    expect(taskData.name).toEqual("Paint");
+
+    // create expenses
+    for (let i = 10; i > 0; i--) {
+      const date = new Date(Date.now() - i * 24 * 60 * 60_000);
+      vi.setSystemTime(date);
+
+      let quantity = Math.floor(Math.random() * (10 + 1));
+      if (i < 6 && i >= 4) {
+        quantity = 0;
+      }
+
+      await caller.expenses.createExpense({
+        projectId: projectData.id,
+        name: "Deluxe Paint",
+        type: "material",
+        taskId: taskData.id,
+        estimateQty: 5,
+        estimatePrice: 100,
+        quantity: quantity,
+        price: 100,
+      });
+
+      vi.useRealTimers();
+    }
+
+    // get task dashboard data
+    const expensesDataResponse =
+      await caller.dashboard.getExpensesProjectionsData({
+        projectId: projectData.id,
+      });
+    const expensesData = expensesDataResponse.data;
+
+    expect(expensesData.length).toEqual(10);
   });
 });

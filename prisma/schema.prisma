@@ -33,10 +33,12 @@ model Project {
     expenses        Expense[] 
     transactions    Transaction[] 
     currency        String @default("ZAR")
+    currencySymbol  String @default("R")
     progress        Int @default(0)
     status          StatusCode @default(todo)
     statuses        Status[]
     dueDate         DateTime @default(now())
+    startDate       DateTime @default(now())
     // This field is to identify whether we stop recursion in the db custom update method
     // TODO: Remove it once Prisma introduces custom arguments to update methods
     progressUpdate  Boolean? 
@@ -87,6 +89,8 @@ model Expense {
     taskId          String?
     estimateCost    Float @default(0)
     cost            Float @default(0)
+    updatedTime     DateTime @default(now())
+    updatedDate     String @default("")
 }
 
 model Transaction {

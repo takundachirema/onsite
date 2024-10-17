@@ -99,11 +99,16 @@ const ProjectModal = ({
    * @param formData
    */
   const createProject = async (formData: FormData) => {
+    const projectCurrency = formData.get("currency")?.toString() ?? "ZAR";
     const projectData = {
       name: formData.get("name")?.toString() ?? "",
       dueDate: formData.get("dueDate") as unknown as Date,
+      startDate: formData.get("startDate") as unknown as Date,
       userIds: formData.getAll("project-team") as string[],
-      currency: formData.get("currency")?.toString() ?? "ZAR",
+      currency: projectCurrency,
+      currencySymbol:
+        currencies.find((currency) => currency.code === projectCurrency)
+          ?.symbol ?? "R",
     };
 
     const createProjectResponse =
@@ -118,12 +123,17 @@ const ProjectModal = ({
    * @param formData
    */
   const updateProject = async (formData: FormData) => {
+    const projectCurrency = formData.get("currency")?.toString() ?? "ZAR";
     const projectData = {
       id: kanbanCard ? kanbanCard.id : "",
       name: formData.get("name")?.toString() ?? "",
       dueDate: formData.get("dueDate") as unknown as Date,
+      startDate: formData.get("startDate") as unknown as Date,
       userIds: formData.getAll("project-team") as string[],
-      currency: formData.get("currency")?.toString() ?? "ZAR",
+      currency: projectCurrency,
+      currencySymbol:
+        currencies.find((currency) => currency.code === projectCurrency)
+          ?.symbol ?? "R",
     };
 
     const updateProjectResponse =
@@ -210,6 +220,21 @@ const ProjectModal = ({
                 </SelectItem>
               )}
             </Select>
+            <DatePicker
+              defaultValue={
+                (kanbanCard.object as Project).startDate
+                  ? parseDate(
+                      (kanbanCard.object as Project).startDate
+                        .toISOString()
+                        .split("T")[0]!,
+                    )
+                  : undefined
+              }
+              name="startDate"
+              label="Start Date"
+              isDisabled={action === "delete" ? true : false}
+              isRequired
+            />
             <DatePicker
               defaultValue={
                 (kanbanCard.object as Project).dueDate
