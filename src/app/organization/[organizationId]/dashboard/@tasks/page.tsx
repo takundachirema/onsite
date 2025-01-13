@@ -3,7 +3,7 @@
 import "chart.js/auto";
 import { api } from "$/src/trpc/react";
 import { useEffect, useState } from "react";
-import { Button, Card, Chip, semanticColors } from "@nextui-org/react";
+import { Button, Card, Chip, semanticColors, Tooltip } from "@nextui-org/react";
 import { selectedProjectAtom } from "$/src/context/JotaiContext";
 import { useAtomValue } from "jotai";
 import { Doughnut, Line } from "react-chartjs-2";
@@ -12,10 +12,12 @@ import { statusDataMap } from "$/src/utils/utils";
 import { type StatusCode } from "$/src/utils/types";
 import { type Status } from "@prisma/client";
 import { type DataPoint, linear } from "regression";
-import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
 
 const TasksDashboard = () => {
   /** react hooks */
+  const [completedTasks, setCompletedTasks] = useState(0);
+  const [projectedCompletedTasks, setProjectedCompletedTasks] = useState(0);
+  const [totalTasks, setTotalTasks] = useState(0);
   const [plannedCompletionPercentage, setPlannedCompletionPercentage] =
     useState(0);
   const [completionPercentage, setCompletionPercentage] = useState(0);
@@ -154,9 +156,12 @@ const TasksDashboard = () => {
       (taskData) => taskData.status === "approved",
     )?.count;
 
+    setCompletedTasks(approvedTaskCount ?? 0);
+
     setPlannedCompletionPercentage(
       ((plannedApprovedTaskCount ?? 0) / taskCount) * 100,
     );
+
     setCompletionPercentage(((approvedTaskCount ?? 0) / taskCount) * 100);
   }, [tasksData]);
 
@@ -166,18 +171,20 @@ const TasksDashboard = () => {
       return;
     }
 
-    // get first day of project
+    // get project dates
+    const projectStartDate = new Date(selectedProject.startDate);
     const projectEndDate = new Date(selectedProject.dueDate);
+    const currentDate = new Date();
 
     const [labels, regressionLabels] = getProjectionLabels(
-      new Date(taskProjectionsData[0]!.projectStartDate),
+      projectStartDate,
       projectEndDate,
     );
 
     // get the data
     const projectionData = getProjectionData(
-      new Date(taskProjectionsData[0]!.projectStartDate),
-      new Date(),
+      projectStartDate,
+      currentDate > projectEndDate ? projectEndDate : currentDate,
     );
 
     // create the regression data
@@ -195,9 +202,14 @@ const TasksDashboard = () => {
       (total, data) => total + data.plannedCount,
       0,
     );
+
+    setTotalTasks(taskCount);
+
     setProjectedCompletionPercentage(
       (([...regressionData].pop() ?? 0) / taskCount) * 100,
     );
+
+    setProjectedCompletedTasks([...regressionData].pop() ?? 0);
 
     setProjectionsChartData({
       labels: labels,
@@ -206,17 +218,14 @@ const TasksDashboard = () => {
           label: "Completed Tasks",
           data: projectionData,
           fill: false,
-          borderColor: "rgb(75, 192, 192)",
+          borderColor: semanticColors.dark.primary[500],
           tension: 0.1,
         },
         {
-          label: "Completed Tasks Projection",
+          label: "Projected Completed Tasks",
           data: regressionData,
           fill: true,
-          borderColor:
-            projectedCompletionPercentage >= 100
-              ? semanticColors.dark.success[400]
-              : semanticColors.dark.danger[400],
+          borderColor: semanticColors.dark.secondary[600],
           tension: 0.1,
         },
       ],
@@ -231,7 +240,7 @@ const TasksDashboard = () => {
     const regressionLabels: number[] = [];
 
     let x = 0;
-    const currentDate = startDate;
+    const currentDate = new Date(startDate);
     while (currentDate <= endDate) {
       let label = currentDate.getDate().toString();
       if (label === "1") {
@@ -260,7 +269,8 @@ const TasksDashboard = () => {
 
     let position = 0;
     let x = 0;
-    const currentDate = startDate;
+
+    const currentDate = new Date(startDate);
     while (currentDate <= endDate) {
       const currentDateStr = currentDate.toDateString();
       // because the statuses are ordered by date we can iterate until the date changes
@@ -292,7 +302,12 @@ const TasksDashboard = () => {
     const regressionData: DataPoint[] = [];
 
     let i = 0;
-    for (i = 0; i < yAxis.length; i++) {
+    const firstIteration =
+      yAxis.length < xAxis.length ? yAxis.length : xAxis.length;
+    const secondIteration =
+      yAxis.length > xAxis.length ? yAxis.length : xAxis.length;
+
+    for (i = 0; i < firstIteration; i++) {
       regressionData.push([xAxis[i]!, yAxis[i]!]);
     }
 
@@ -300,7 +315,7 @@ const TasksDashboard = () => {
 
     const regressionPoints = [...regressionModel.points];
 
-    for (i = i; i < xAxis.length; i++) {
+    for (i = i; i < secondIteration; i++) {
       regressionPoints.push([xAxis[i]!, regressionModel.predict(xAxis[i]!)[1]]);
     }
 
@@ -313,28 +328,28 @@ const TasksDashboard = () => {
         <Card className="flex h-fit w-full flex-col p-8">
           <Chip
             className="absolute right-0 top-0 m-1"
-            color="warning"
+            color="secondary"
             size="sm"
             variant="solid"
           >
-            Projected Completion
+            Projected Completed Tasks
           </Chip>
-          <div className="flex w-full flex-row items-center gap-4">
-            {projectedCompletionPercentage >= 100 && (
-              <FaCheckCircle
-                size="40"
-                color={semanticColors.dark.success[400]}
-              ></FaCheckCircle>
-            )}
-            {projectedCompletionPercentage < 100 && (
-              <FaExclamationCircle
-                size="40"
-                color={semanticColors.dark.danger[400]}
-              ></FaExclamationCircle>
-            )}
-            <p className="text-4xl font-thin">
-              {`${projectedCompletionPercentage}% Complete`}
-            </p>
+          <div className="mb-4 flex w-full flex-row items-center justify-center gap-4">
+            <Chip color="secondary" className="p-6">
+              <p className="text-4xl font-thin">{`${projectedCompletedTasks} Tasks`}</p>
+            </Chip>
+            <Chip
+              color={projectedCompletionPercentage < 100 ? "danger" : "success"}
+              className="p-6"
+            >
+              <Tooltip
+                content={`${projectedCompletionPercentage < 100 ? "Projected under completion" : "Projected over completion"}`}
+              >
+                <p className="text-4xl font-thin">
+                  {`${projectedCompletionPercentage}%`}
+                </p>
+              </Tooltip>
+            </Chip>
           </div>
           <div className="relative">
             <Line
@@ -363,47 +378,67 @@ const TasksDashboard = () => {
       <div className="mb-4 flex w-full flex-row gap-4">
         <Card className="flex h-fit w-1/2 flex-col items-center p-8">
           <Chip
-            className="absolute right-0 top-0 m-1"
-            color="default"
+            className={`absolute right-0 top-0 m-1 bg-[${semanticColors.dark.primary[500]}]`}
             size="sm"
             variant="solid"
           >
-            Planned Completion
+            Current Completion
           </Chip>
-          <p className="text-4xl font-thin">
-            {`${plannedCompletionPercentage.toFixed(0)}% Complete`}
-          </p>
-          <div className="relative">
-            <Doughnut data={estimateCostChartData}></Doughnut>
+
+          <div className="mb-2 flex w-full flex-row items-center justify-center gap-4">
+            <Chip className={`p-6 bg-[${semanticColors.dark.primary[500]}]`}>
+              <p className="text-4xl font-thin">{`${completedTasks} Tasks`}</p>
+            </Chip>
+
+            <Chip
+              color={
+                plannedCompletionPercentage > completionPercentage
+                  ? "danger"
+                  : "success"
+              }
+              className="p-6"
+            >
+              <Tooltip
+                content={`${plannedCompletionPercentage < completionPercentage ? "Current under completion" : "Current over completion"}`}
+              >
+                <p className="text-4xl font-thin">
+                  {`${Math.abs(completionPercentage - plannedCompletionPercentage).toFixed(0)}%`}
+                </p>
+              </Tooltip>
+            </Chip>
           </div>
-        </Card>
-        <Card className="flex h-fit w-1/2 flex-col items-center p-8">
-          <Chip
-            className="absolute right-0 top-0 m-1"
-            color="primary"
-            size="sm"
-            variant="solid"
-          >
-            Actual Completion
-          </Chip>
-          <p className="text-4xl font-thin">
-            {`${completionPercentage.toFixed(0)}% Complete`}
-          </p>
 
           <div className="relative">
             <Doughnut data={costChartData} />
             <Button
               isIconOnly
               radius="full"
+              className={`absolute left-[35%] top-[40%] h-[30%] w-[30%] rounded-full text-xl font-thin bg-[${semanticColors.dark.primary[500]}]`}
+            />
+          </div>
+        </Card>
+
+        <Card className="flex h-fit w-1/2 flex-col items-center p-8">
+          <Chip
+            className="absolute right-0 top-0 m-1"
+            color="warning"
+            size="sm"
+            variant="solid"
+          >
+            Planned Completion
+          </Chip>
+          <Chip color="warning" className="p-6">
+            <p className="text-4xl font-thin">{`${completedTasks} Tasks`}</p>
+          </Chip>
+
+          <div className="relative">
+            <Doughnut data={estimateCostChartData}></Doughnut>
+            <Button
+              isIconOnly
+              radius="full"
               className="absolute left-[35%] top-[40%] h-[30%] w-[30%] rounded-full text-xl font-thin"
-              color={
-                completionPercentage >= plannedCompletionPercentage
-                  ? "success"
-                  : "danger"
-              }
-            >
-              {`${completionPercentage - plannedCompletionPercentage} %`}
-            </Button>
+              color="warning"
+            />
           </div>
         </Card>
       </div>

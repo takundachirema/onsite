@@ -135,8 +135,10 @@ describe("dashboard", () => {
       vi.setSystemTime(date);
 
       let quantity = Math.floor(Math.random() * (10 + 1));
+      let estimateQty = Math.floor(Math.random() * (10 + 1));
       if (i < 6 && i >= 4) {
         quantity = 0;
+        estimateQty = 0;
       }
 
       await caller.expenses.createExpense({
@@ -144,7 +146,7 @@ describe("dashboard", () => {
         name: "Deluxe Paint",
         type: "material",
         taskId: taskData.id,
-        estimateQty: 5,
+        estimateQty: estimateQty,
         estimatePrice: 100,
         quantity: quantity,
         price: 100,

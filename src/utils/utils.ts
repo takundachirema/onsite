@@ -25,7 +25,7 @@ export const roleDataMap: UserRoleDataMap = {
 };
 
 export const expenseTypeDataMap: ExpenseTypeDataMap = {
-  material: { label: "Material", code: "material", color: "success" },
+  material: { label: "Material", code: "material", color: "warning" },
   labour: { label: "Labour", code: "labour", color: "primary" },
   fee: { label: "Fee", code: "fee", color: "secondary" },
   other: { label: "Other", code: "other", color: "default" },

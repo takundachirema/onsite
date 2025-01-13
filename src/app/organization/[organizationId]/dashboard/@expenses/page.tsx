@@ -3,7 +3,7 @@
 import "chart.js/auto";
 import { api } from "$/src/trpc/react";
 import { useEffect, useState } from "react";
-import { Button, Card, Chip, semanticColors } from "@nextui-org/react";
+import { Button, Card, Chip, semanticColors, Tooltip } from "@nextui-org/react";
 import { selectedProjectAtom } from "$/src/context/JotaiContext";
 import { useAtomValue } from "jotai";
 import { Doughnut, Line } from "react-chartjs-2";
@@ -104,8 +104,8 @@ const ExpensesDashboard = () => {
                 return semanticColors.dark.primary[400];
               case "secondary":
                 return semanticColors.dark.secondary[400];
-              case "success":
-                return semanticColors.dark.success[400];
+              case "warning":
+                return semanticColors.dark.warning[400];
               default: {
                 return semanticColors.dark.default[400];
               }
@@ -131,8 +131,8 @@ const ExpensesDashboard = () => {
                 return semanticColors.dark.primary[400];
               case "secondary":
                 return semanticColors.dark.secondary[400];
-              case "success":
-                return semanticColors.dark.success[400];
+              case "warning":
+                return semanticColors.dark.warning[400];
               default: {
                 return semanticColors.dark.default[400];
               }
@@ -161,12 +161,12 @@ const ExpensesDashboard = () => {
     const labels = getProjectionLabels();
 
     // get the data
-    const projectionData = getProjectionData();
+    const [actualCostData, estimatedCostData] = getProjectionData();
 
     // create the regression data
     const regressionDataPoints = getRegressionData(
       labels.map((label) => Number(label)),
-      projectionData,
+      actualCostData!,
     );
 
     const regressionData: number[] = [];
@@ -174,31 +174,40 @@ const ExpensesDashboard = () => {
       regressionData.push(dataPoint[1]);
     });
 
-    const estimatedExpenditure = expensesData.reduce(
-      (total, data) => total + data.estimateCost,
-      0,
+    // If all the estimates have been actualized use the actual instead of projected
+    setProjectedExpenditure(
+      [
+        ...(estimatedCostData?.length === actualCostData?.length
+          ? actualCostData ?? []
+          : regressionData),
+      ].pop() ?? 0,
     );
-    setEstimatedExpenditure(estimatedExpenditure);
-    setProjectedExpenditure([...regressionData].pop() ?? 0);
+
+    setEstimatedExpenditure([...(estimatedCostData ?? [0])].pop() ?? 0);
 
     setProjectionsChartData({
       labels: labels,
       datasets: [
         {
-          label: "Cumulative Expenses",
-          data: projectionData,
+          label: "Current Expenditure",
+          data: actualCostData!,
           fill: false,
-          borderColor: "rgb(75, 192, 192)",
+          borderColor: semanticColors.dark.primary[500],
           tension: 0.1,
         },
         {
-          label: "Average Cumulative Expenses",
+          label: "Planned Expenditure",
+          data: estimatedCostData!,
+          fill: false,
+          borderColor: semanticColors.dark.warning[500],
+          tension: 0.1,
+        },
+        {
+          label: "Projected Expenditure",
           data: regressionData,
-          fill: true,
-          borderColor:
-            projectedExpenditure <= estimatedExpenditure
-              ? semanticColors.dark.success[400]
-              : semanticColors.dark.danger[400],
+          fill: false,
+          hidden: estimatedCostData?.length === actualCostData?.length,
+          borderColor: semanticColors.dark.secondary[600],
           tension: 0.1,
         },
       ],
@@ -208,7 +217,7 @@ const ExpensesDashboard = () => {
   const getProjectionLabels = (): string[] => {
     const labels: string[] = [];
 
-    for (let i = 0; i < expenseProjectionsData.length; i++) {
+    for (let i = 0; i <= expenseProjectionsData.length; i++) {
       labels.push(i.toString());
     }
 
@@ -216,26 +225,34 @@ const ExpensesDashboard = () => {
   };
 
   /**
-   * For each date in the range we find the cumulative expenditure of approved tasks
-   * - When an exp is set to approved we increase the counter
-   * - When a task is set from approved to not approved we decrease the counter
-   * @param startDate
-   * @param endDate
+   * Add up the accumulated expenses to be able to project what the total costs will be
    * @returns
    */
   const getProjectionData = () => {
-    let cumulativeExpenditure = 0;
-    const data: number[] = [0];
+    let cumulativeActualExpenditure = 0;
+    let cumulativeEstimateExpenditure = 0;
+    const actualCostData: number[] = [0];
+    const estimatedCostData: number[] = [0];
 
     let x = 1;
     for (const expense of expenseProjectionsData) {
       if (expense.cost === 0) continue;
-      cumulativeExpenditure += expense.cost;
-      data[x] = cumulativeExpenditure;
+      cumulativeActualExpenditure += expense.cost;
+      cumulativeEstimateExpenditure += expense.estimateCost;
+
+      actualCostData[x] = cumulativeActualExpenditure;
+      estimatedCostData[x] = cumulativeEstimateExpenditure;
       x++;
     }
 
-    return data;
+    for (const expense of expenseProjectionsData) {
+      if (expense.cost !== 0) continue;
+      cumulativeEstimateExpenditure += expense.estimateCost;
+      estimatedCostData[x] = cumulativeEstimateExpenditure;
+      x++;
+    }
+
+    return [actualCostData, estimatedCostData];
   };
 
   /**
@@ -270,36 +287,17 @@ const ExpensesDashboard = () => {
         <Card className="flex h-fit w-full flex-col p-8">
           <Chip
             className="absolute right-0 top-0 m-1"
-            color="warning"
+            color="secondary"
             size="sm"
             variant="solid"
           >
             Projected Expenditure
           </Chip>
           <div className="mb-4 flex w-full flex-row items-center justify-center gap-4">
-            {projectedExpenditure <= estimatedExpenditure && (
-              <FaCheckCircle
-                size="40"
-                color={semanticColors.dark.success[400]}
-              ></FaCheckCircle>
-            )}
-            {projectedExpenditure > estimatedExpenditure && (
-              <FaExclamationCircle
-                size="40"
-                color={semanticColors.dark.danger[400]}
-              ></FaExclamationCircle>
-            )}
-            <Chip
-              color={
-                projectedExpenditure > estimatedExpenditure
-                  ? "danger"
-                  : "success"
-              }
-              className="p-6"
-            >
+            <Chip color="secondary" className="p-6">
               <p className="text-4xl font-thin">
                 {`${selectedProject?.currencySymbol} `}
-                {`${(projectedExpenditure - estimatedExpenditure).toFixed(2)} ${projectedExpenditure > estimatedExpenditure ? "Over" : "Under"}`}
+                {projectedExpenditure}
               </p>
             </Chip>
             <Chip
@@ -310,9 +308,30 @@ const ExpensesDashboard = () => {
               }
               className="p-6"
             >
-              <p className="text-4xl font-thin">
-                {`${((Math.abs(projectedExpenditure - estimatedExpenditure) / estimatedExpenditure) * 100).toFixed(2)}% ${projectedExpenditure > estimatedExpenditure ? "Over" : "Under"}`}
-              </p>
+              <Tooltip
+                content={`${projectedExpenditure > estimatedExpenditure ? "Over budget projection" : "Under budget projection"}`}
+              >
+                <p className="text-4xl font-thin">
+                  {`${selectedProject?.currencySymbol} `}
+                  {`${(projectedExpenditure - estimatedExpenditure).toFixed(2)}`}
+                </p>
+              </Tooltip>
+            </Chip>
+            <Chip
+              color={
+                projectedExpenditure > estimatedExpenditure
+                  ? "danger"
+                  : "success"
+              }
+              className="p-6"
+            >
+              <Tooltip
+                content={`${projectedExpenditure > estimatedExpenditure ? "Over budget Projection" : "Under budget Projection"}`}
+              >
+                <p className="text-4xl font-thin">
+                  {`${((Math.abs(projectedExpenditure - estimatedExpenditure) / estimatedExpenditure) * 100).toFixed(2)}% `}
+                </p>
+              </Tooltip>
             </Chip>
           </div>
           <div className="relative">
@@ -323,13 +342,13 @@ const ExpensesDashboard = () => {
                   y: {
                     title: {
                       display: true,
-                      text: "Expenditure",
+                      text: "Value of Expenses In " + selectedProject?.currency,
                     },
                   },
                   x: {
                     title: {
                       display: true,
-                      text: "Number of expenses",
+                      text: "Number of Expenses",
                     },
                   },
                 },
@@ -342,46 +361,68 @@ const ExpensesDashboard = () => {
       <div className="mb-4 flex w-full flex-row gap-4">
         <Card className="flex h-fit w-1/2 flex-col items-center p-8">
           <Chip
-            className="absolute right-0 top-0 m-1"
-            color="default"
+            className={`absolute right-0 top-0 m-1 bg-[${semanticColors.dark.primary[500]}]`}
             size="sm"
             variant="solid"
           >
-            Planned Expenditure
+            <p>Current Expenditure</p>
           </Chip>
-          <p className="text-4xl font-thin">
-            {`${selectedProject?.currencySymbol} `}
-            {estimateCostTotal}
-          </p>
-          <div className="relative">
-            <Doughnut data={estimateCostChartData}></Doughnut>
-          </div>
-        </Card>
-        <Card className="flex h-fit w-1/2 flex-col items-center p-8">
-          <Chip
-            className="absolute right-0 top-0 m-1"
-            color="primary"
-            size="sm"
-            variant="solid"
-          >
-            Actual Expenditure
-          </Chip>
-          <p className="text-4xl font-thin">
-            {`${selectedProject?.currencySymbol} `}
-            {costTotal}
-          </p>
 
+          <div className="mb-2 flex w-full flex-row items-center justify-center gap-4">
+            <Chip className={`p-6 bg-[${semanticColors.dark.primary[500]}]`}>
+              <p className="text-4xl font-thin">
+                {`${selectedProject?.currencySymbol} `}
+                {costTotal}
+              </p>
+            </Chip>
+            <Chip
+              color={costTotal > estimateCostTotal ? "danger" : "success"}
+              className="p-6"
+            >
+              <Tooltip
+                content={`${costTotal > estimateCostTotal ? "Current over budget" : "Current under budget"}`}
+              >
+                <p className="text-4xl font-thin">
+                  {`${((Math.abs(estimateCostTotal - costTotal) / estimateCostTotal) * 100).toFixed(2)}%`}
+                </p>
+              </Tooltip>
+            </Chip>
+          </div>
           <div className="relative">
             <Doughnut data={costChartData} />
             <Button
               isIconOnly
               radius="full"
+              className={`absolute left-[35%] top-[40%] h-[30%] w-[30%] rounded-full text-xl font-thin bg-[${semanticColors.dark.primary[500]}]`}
+            />
+          </div>
+        </Card>
+
+        <Card className="flex h-fit w-1/2 flex-col items-center p-8">
+          <Chip
+            className="absolute right-0 top-0 m-1"
+            color="warning"
+            size="sm"
+            variant="solid"
+          >
+            Planned Expenditure
+          </Chip>
+          <div className="mb-2 flex w-full flex-row items-center justify-center gap-4">
+            <Chip color="warning" className="p-6">
+              <p className="text-4xl font-thin">
+                {`${selectedProject?.currencySymbol} `}
+                {estimateCostTotal}
+              </p>
+            </Chip>
+          </div>
+          <div className="relative">
+            <Doughnut data={estimateCostChartData}></Doughnut>
+            <Button
+              isIconOnly
+              radius="full"
               className="absolute left-[35%] top-[40%] h-[30%] w-[30%] rounded-full text-xl font-thin"
-              color={costTotal > estimateCostTotal ? "danger" : "success"}
-            >
-              {`${selectedProject?.currencySymbol} `}
-              {`${estimateCostTotal - costTotal} `}
-            </Button>
+              color="warning"
+            />
           </div>
         </Card>
       </div>

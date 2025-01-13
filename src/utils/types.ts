@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { type SVGProps } from "react";
-import { expenseTypes, type roomTypes } from "./utils";
+import { type expenseTypes, type roomTypes } from "./utils";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
@@ -94,7 +94,7 @@ export type ExpenseTypeCode = (typeof expenseTypes)[number];
 export type ExpenseType = {
   label: string;
   code: ExpenseTypeCode;
-  color: "default" | "primary" | "success" | "secondary" | undefined;
+  color: "default" | "primary" | "warning" | "secondary" | undefined;
 };
 export type ExpenseTypeDataMap = {
   [key in ExpenseTypeCode]: ExpenseType;

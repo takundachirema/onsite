@@ -106,6 +106,11 @@ const OrganizationIdPage = () => {
   const onUpdate = (response: { success: boolean; data: Project }) => {
     const project = response.data;
     if (response.success) {
+      // update the selected project
+      if (selectedProject?.id === project.id) {
+        setSelectedProject(project);
+      }
+
       switch (response.data.status) {
         case "todo": {
           const updatedItems = updateKanbanLaneItems(project, todoItems);

@@ -20,7 +20,7 @@ export const dashboardRouter = createTRPCRouter({
       };
 
       const expenses = await ctx.db.expense.findMany({
-        where: expensesDataSchema.parse(input),
+        where: { ...expensesDataSchema.parse(input) },
       });
 
       const totalEstimateCost = _.sumBy(expenses, "estimateCost");
@@ -29,8 +29,9 @@ export const dashboardRouter = createTRPCRouter({
       const data = _.chain(expenses)
         .groupBy("type")
         .map((expenses, type) => {
-          const estimateCost = _.sumBy(expenses, "estimateCost");
-          const cost = _.sumBy(expenses, "cost");
+          const nonZeroExpenses = expenses.filter((data) => data.cost > 0);
+          const estimateCost = _.sumBy(nonZeroExpenses, "estimateCost");
+          const cost = _.sumBy(nonZeroExpenses, "cost");
 
           return {
             type: type,
