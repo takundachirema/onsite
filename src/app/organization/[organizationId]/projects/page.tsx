@@ -51,7 +51,9 @@ const OrganizationIdPage = () => {
         const projects = response.data ? response.data.data : [];
 
         setProjects(projects);
-        if (!selectedProject && projects.length > 0) {
+        if (projects.length === 0) {
+          setSelectedProject(undefined);
+        } else if (!selectedProject) {
           setSelectedProject(projects[0]);
         }
 
@@ -95,12 +97,20 @@ const OrganizationIdPage = () => {
     const project = response.data;
     if (response.success) {
       addToKanbanLaneItems(project);
+      if (!selectedProject) {
+        setSelectedProject(project);
+      }
     }
   };
 
   const onUpdate = (response: { success: boolean; data: Project }) => {
     const project = response.data;
     if (response.success) {
+      // update the selected project
+      if (selectedProject?.id === project.id) {
+        setSelectedProject(project);
+      }
+
       switch (response.data.status) {
         case "todo": {
           const updatedItems = updateKanbanLaneItems(project, todoItems);

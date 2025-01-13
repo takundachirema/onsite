@@ -30,9 +30,18 @@ model Project {
     users           User[]
     tasks           Task[]
     rooms           Room[]
+    expenses        Expense[] 
+    transactions    Transaction[] 
+    currency        String @default("ZAR")
+    currencySymbol  String @default("R")
     progress        Int @default(0)
-    status          Status @default(todo)
+    status          StatusCode @default(todo)
+    statuses        Status[]
     dueDate         DateTime @default(now())
+    startDate       DateTime @default(now())
+    // This field is to identify whether we stop recursion in the db custom update method
+    // TODO: Remove it once Prisma introduces custom arguments to update methods
+    progressUpdate  Boolean? 
 }
 
 model Task {
@@ -42,8 +51,10 @@ model Task {
     users           User[]
     project         Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
     projectId       String
-    rooms           Room[]      
-    status          Status @default(todo)
+    rooms           Room[]
+    expense         Expense[]    
+    status          StatusCode @default(todo)
+    statuses        Status[]
     dueDate         DateTime @default(now())
     // This field is to identify whether we stop recursion in the db custom update method
     // TODO: Remove it once Prisma introduces custom arguments to update methods
@@ -54,33 +65,65 @@ model Room {
     id              String      @id @default(uuid())
     name            String
     type            RoomType
-    budget          Budget?      
     tasks           Task[]
     project         Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
     projectId       String
     progress        Int @default(0)
-    status          Status @default(todo)
+    status          StatusCode @default(todo)
+    statuses        Status[]
     dueDate         DateTime @default(now())
-	@@map("Room")
 }
 
-model Budget{
+model Expense {
     id              String      @id @default(uuid())
     name            String
-    budgetItems     BudgetItem[]
-    room            Room        @relation(fields: [roomId], references: [id])
-    roomId          String      @unique
+    type            ExpenseType
+    estimateQty     Float
+    estimatePrice   Float
+    quantity        Float?
+    price           Float?
+    project         Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    projectId       String
+    transactions    Transaction[] 
+    task            Task?        @relation(fields: [taskId], references: [id], onDelete: Cascade)
+    taskId          String?
+    estimateCost    Float @default(0)
+    cost            Float @default(0)
+    updatedTime     DateTime @default(now())
+    updatedDate     String @default("")
 }
 
-model BudgetItem {
+model Transaction {
     id              String      @id @default(uuid())
-    name            String
-    quantity        Int
-    cost            Float
-    totalCost       Float
-    notes           String
-    budget          Budget     @relation(fields: [budgetId], references: [id])
-    budgetId        String
+    project         Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    projectId       String
+    expense         Expense     @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+    expenseId       String
+    vendor          String?
+    date            DateTime @default(now())
+    notes           String?
+    price           Float
+    quantity        Float
+    cost            Float?
+    ref             String?
+    // This field is to identify whether we stop recursion in the db custom update method
+    // TODO: Remove it once Prisma introduces custom arguments to update methods
+    progressUpdate  Boolean? 
+}
+
+model Status {
+    id              String      @id @default(uuid())
+    status          StatusCode  @default(todo)
+    previousStatus  StatusCode  @default(todo)
+    dateTime        DateTime    @default(now())
+    date            String      @default("")
+    projectStartDate String     @default("")
+    project         Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    projectId       String
+    task            Task?       @relation(fields: [taskId], references: [id], onDelete: Cascade)
+    taskId          String?
+    room            Room?       @relation(fields: [roomId], references: [id], onDelete: Cascade)
+    roomId          String?
 }
 
 enum RoomType {
@@ -99,7 +142,7 @@ enum RoomType {
     other
 }
 
-enum Status {
+enum StatusCode {
     todo
     inprogress
     done
@@ -111,4 +154,11 @@ enum Role {
     admin
     guest
     employee
+}
+
+enum ExpenseType {
+    material
+    labour
+    fee
+    other
 }

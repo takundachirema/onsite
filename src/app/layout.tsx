@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-page-custom-font */
 import "$/src/styles/globals.css";
 import { type Metadata } from "next";
 import { siteConfig, type SiteConfig } from "$/src/config/site";
@@ -34,12 +35,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head />
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body
-        className={clsx(
-          "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable,
-        )}
+        className={
+          "font-outfit min-h-screen overflow-clip bg-background antialiased"
+        }
       >
         <Providers
           themeProps={{ children, attribute: "class", defaultTheme: "dark" }}

@@ -17,7 +17,7 @@ import {
   DropdownTrigger,
 } from "@nextui-org/react";
 import { useContext } from "react";
-import { FaEdit, FaEllipsisV, FaTrash, FaUsers } from "react-icons/fa";
+import { FaEdit, FaEllipsisV, FaTrash } from "react-icons/fa";
 
 const KanbanCard = ({
   cardData,

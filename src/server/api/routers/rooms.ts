@@ -82,9 +82,6 @@ export const roomsRouter = createTRPCRouter({
         data: {},
       };
 
-      console.log("** tasks");
-      console.log(input.taskIds);
-
       const taskIds = input.taskIds
         ? { tasks: { set: input.taskIds.map((userId) => ({ id: userId })) } }
         : {};

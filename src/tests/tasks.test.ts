@@ -4,6 +4,7 @@
 import { createCaller } from "$/src/server/api/root";
 import { cleanUpDatabase, createTestContext } from "$/src/utils/tests/tests";
 import { type Project } from "@prisma/client";
+import exp from "node:constants";
 import { beforeEach, describe, test, expect } from "vitest";
 
 let ctx: any;
@@ -19,7 +20,10 @@ describe("tasks", () => {
     const caller = createCaller(ctx);
     const createProjectResponse = await caller.projects.createProject({
       name: "Project 1",
+      startDate: new Date(),
       dueDate: new Date(),
+      currency: "ZAR",
+      currencySymbol: "R",
     });
     projectData = createProjectResponse.data;
   });
@@ -36,7 +40,13 @@ describe("tasks", () => {
     });
     const taskData = createTaskResponse.data;
 
+    // check that the status has been created
+    const statusResponse = await caller.dashboard.getStatusData({
+      taskId: taskData.id,
+    });
+
     expect(taskData.name).toEqual("Paint");
+    expect(statusResponse.data[0]?.status).toEqual("todo");
   });
 
   test("update a task", async () => {
@@ -74,5 +84,18 @@ describe("tasks", () => {
       id: projectData.id,
     });
     expect(projectResponse?.progress).toEqual(50);
+    expect(projectResponse?.status).toEqual("inprogress");
+
+    // check that the statuses have been created
+    let statusResponse = await caller.dashboard.getStatusData({
+      projectId: projectData.id,
+    });
+    expect(statusResponse.data.length).toEqual(5);
+
+    statusResponse = await caller.dashboard.getStatusData({
+      taskId: taskData.id,
+    });
+    expect(statusResponse.data.length).toEqual(2);
+    expect(statusResponse.data[1]?.status).toEqual("done");
   });
 });

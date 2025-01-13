@@ -7,7 +7,7 @@ export default function TableActionbar({
   actionBarItems: SidebarItem[];
 }) {
   return (
-    <Card className="w-full p-4">
+    <Card className="w-full flex-shrink-0 p-4">
       <div className="flex w-full flex-row justify-start">
         {actionBarItems.map((actionBarItem) => (
           <Button
